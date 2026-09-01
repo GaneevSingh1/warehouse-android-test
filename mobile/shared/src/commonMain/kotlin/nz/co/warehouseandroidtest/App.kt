@@ -18,6 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import nz.co.warehouseandroidtest.ui.theme.WarehouseTheme
 import org.jetbrains.compose.resources.painterResource
 import warehousekmpapp.shared.generated.resources.Res
 import warehousekmpapp.shared.generated.resources.compose_multiplatform
@@ -25,7 +26,7 @@ import warehousekmpapp.shared.generated.resources.compose_multiplatform
 @Composable
 @Preview
 fun App() {
-    MaterialTheme {
+    WarehouseTheme {
         var showContent by remember { mutableStateOf(false) }
         Column(
             modifier = Modifier
