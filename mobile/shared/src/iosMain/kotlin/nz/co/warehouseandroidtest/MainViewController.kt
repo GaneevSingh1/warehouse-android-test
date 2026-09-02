@@ -1,13 +1,13 @@
 package nz.co.warehouseandroidtest
 
 import androidx.compose.ui.window.ComposeUIViewController
-import nz.co.warehouseandroidtest.di.sharedModule
+import nz.co.warehouseandroidtest.di.appModules
 import org.koin.core.context.startKoin
 
 @Suppress("ktlint:standard:function-naming")
 fun MainViewController() = run {
     startKoin {
-        modules(sharedModule)
+        modules(appModules)
     }
     ComposeUIViewController { App() }
 }
