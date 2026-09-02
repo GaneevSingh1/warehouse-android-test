@@ -72,13 +72,18 @@ class ProductListViewModel(
                 .onFailure { error ->
                     canGoNext = false
                     uiState = ProductListUiState.Error(
-                        error.message?.takeIf { it.isNotBlank() } ?: "Couldn't load products",
+                        error.message
+                            ?.lineSequence()
+                            ?.firstOrNull()
+                            ?.takeIf { it.isNotBlank() }
+                            ?: "Couldn't load products",
                     )
                 }
         }
     }
 
-private fun updatePaging(result: SearchResult) {
-    canGoPrevious = start > DEFAULT_SEARCH_START
-    canGoNext = start + DEFAULT_SEARCH_LIMIT < result.total
+    private fun updatePaging(result: SearchResult) {
+        canGoPrevious = start > DEFAULT_SEARCH_START
+        canGoNext = start + result.products.size < result.total
+    }
 }

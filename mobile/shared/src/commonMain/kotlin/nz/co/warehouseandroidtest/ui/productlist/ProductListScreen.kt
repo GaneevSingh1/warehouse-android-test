@@ -144,6 +144,7 @@ internal fun ProductListContent(
                     .padding(innerPadding),
             )
             is ProductListUiState.Error -> ErrorState(
+                message = uiState.message,
                 onRetry = onRetry,
                 modifier = Modifier
                     .fillMaxSize()
@@ -405,6 +406,7 @@ private fun EmptyState(
 
 @Composable
 private fun ErrorState(
+    message: String,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -421,7 +423,7 @@ private fun ErrorState(
         )
         Spacer(modifier = Modifier.height(AppDimensions.PaddingSmall))
         Text(
-            text = stringResource(Res.string.search_error_message),
+            text = message.ifBlank { stringResource(Res.string.search_error_message) },
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
