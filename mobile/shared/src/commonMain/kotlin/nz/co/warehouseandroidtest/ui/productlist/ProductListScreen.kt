@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -26,6 +27,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -49,10 +51,13 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import warehousekmpapp.shared.generated.resources.Res
 import warehousekmpapp.shared.generated.resources.ic_arrow_back
+import warehousekmpapp.shared.generated.resources.ic_arrow_forward
 import warehousekmpapp.shared.generated.resources.ic_package
 import warehousekmpapp.shared.generated.resources.navigate_back
+import warehousekmpapp.shared.generated.resources.next_page
 import warehousekmpapp.shared.generated.resources.no_products_found
 import warehousekmpapp.shared.generated.resources.no_products_found_message
+import warehousekmpapp.shared.generated.resources.previous_page
 import warehousekmpapp.shared.generated.resources.product_image
 import warehousekmpapp.shared.generated.resources.product_list_title
 import warehousekmpapp.shared.generated.resources.product_results_count
@@ -70,8 +75,13 @@ fun ProductListScreen(
     ProductListContent(
         query = query,
         uiState = viewModel.uiState,
+        start = viewModel.start,
+        canGoPrevious = viewModel.canGoPrevious,
+        canGoNext = viewModel.canGoNext,
         onBack = onBack,
         onRetry = viewModel::retry,
+        onPreviousPage = viewModel::previousPage,
+        onNextPage = viewModel::nextPage,
         modifier = modifier,
     )
 }
@@ -81,8 +91,13 @@ fun ProductListScreen(
 internal fun ProductListContent(
     query: String,
     uiState: ProductListUiState,
+    start: Int,
+    canGoPrevious: Boolean,
+    canGoNext: Boolean,
     onBack: () -> Unit,
     onRetry: () -> Unit,
+    onPreviousPage: () -> Unit,
+    onNextPage: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -120,6 +135,10 @@ internal fun ProductListContent(
                     .padding(innerPadding),
             )
             ProductListUiState.Empty -> EmptyState(
+                canGoPrevious = canGoPrevious,
+                canGoNext = canGoNext,
+                onPreviousPage = onPreviousPage,
+                onNextPage = onNextPage,
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding),
@@ -132,6 +151,11 @@ internal fun ProductListContent(
             )
             is ProductListUiState.Success -> ProductList(
                 result = uiState.result,
+                start = start,
+                canGoPrevious = canGoPrevious,
+                canGoNext = canGoNext,
+                onPreviousPage = onPreviousPage,
+                onNextPage = onNextPage,
                 contentPadding = innerPadding,
             )
         }
@@ -141,6 +165,11 @@ internal fun ProductListContent(
 @Composable
 private fun ProductList(
     result: SearchResult,
+    start: Int,
+    canGoPrevious: Boolean,
+    canGoNext: Boolean,
+    onPreviousPage: () -> Unit,
+    onNextPage: () -> Unit,
     contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
 ) {
@@ -158,7 +187,8 @@ private fun ProductList(
             Text(
                 text = stringResource(
                     Res.string.product_results_count,
-                    result.products.size,
+                    start + 1,
+                    start + result.products.size,
                     result.total,
                 ),
                 style = MaterialTheme.typography.titleMedium,
@@ -171,6 +201,56 @@ private fun ProductList(
             key = { it.id },
         ) { product ->
             ProductCard(product = product)
+        }
+        if (canGoPrevious || canGoNext) {
+            item(key = "pagination") {
+                PaginationBar(
+                    canGoPrevious = canGoPrevious,
+                    canGoNext = canGoNext,
+                    onPreviousPage = onPreviousPage,
+                    onNextPage = onNextPage,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun PaginationBar(
+    canGoPrevious: Boolean,
+    canGoNext: Boolean,
+    onPreviousPage: () -> Unit,
+    onNextPage: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        TextButton(
+            onClick = onPreviousPage,
+            enabled = canGoPrevious,
+        ) {
+            Icon(
+                painter = painterResource(Res.drawable.ic_arrow_back),
+                contentDescription = null,
+                modifier = Modifier.size(ButtonDefaults.IconSize),
+            )
+            Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
+            Text(text = stringResource(Res.string.previous_page))
+        }
+        TextButton(
+            onClick = onNextPage,
+            enabled = canGoNext,
+        ) {
+            Text(text = stringResource(Res.string.next_page))
+            Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
+            Icon(
+                painter = painterResource(Res.drawable.ic_arrow_forward),
+                contentDescription = null,
+                modifier = Modifier.size(ButtonDefaults.IconSize),
+            )
         }
     }
 }
@@ -280,7 +360,13 @@ private fun LoadingState(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun EmptyState(modifier: Modifier = Modifier) {
+private fun EmptyState(
+    canGoPrevious: Boolean,
+    canGoNext: Boolean,
+    onPreviousPage: () -> Unit,
+    onNextPage: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Column(
         modifier = modifier.padding(AppDimensions.PaddingLarge),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -305,6 +391,15 @@ private fun EmptyState(modifier: Modifier = Modifier) {
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
+        if (canGoPrevious || canGoNext) {
+            Spacer(modifier = Modifier.height(AppDimensions.PaddingMedium))
+            PaginationBar(
+                canGoPrevious = canGoPrevious,
+                canGoNext = canGoNext,
+                onPreviousPage = onPreviousPage,
+                onNextPage = onNextPage,
+            )
+        }
     }
 }
 
@@ -365,8 +460,13 @@ private fun ProductListSuccessPreview() {
                     ),
                 ),
             ),
+            start = 0,
+            canGoPrevious = false,
+            canGoNext = true,
             onBack = {},
             onRetry = {},
+            onPreviousPage = {},
+            onNextPage = {},
         )
     }
 }
@@ -378,8 +478,13 @@ private fun ProductListLoadingPreview() {
         ProductListContent(
             query = "stool",
             uiState = ProductListUiState.Loading,
+            start = 0,
+            canGoPrevious = false,
+            canGoNext = false,
             onBack = {},
             onRetry = {},
+            onPreviousPage = {},
+            onNextPage = {},
         )
     }
 }

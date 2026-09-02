@@ -8,6 +8,8 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import nz.co.warehouseandroidtest.data.remote.search.DEFAULT_SEARCH_LIMIT
+import nz.co.warehouseandroidtest.data.remote.search.DEFAULT_SEARCH_START
 import nz.co.warehouseandroidtest.data.repository.SearchRepository
 import nz.co.warehouseandroidtest.domain.model.SearchResult
 
@@ -26,6 +28,15 @@ class ProductListViewModel(
     var uiState: ProductListUiState by mutableStateOf(ProductListUiState.Loading)
         private set
 
+    var start: Int by mutableStateOf(DEFAULT_SEARCH_START)
+        private set
+
+    var canGoPrevious: Boolean by mutableStateOf(false)
+        private set
+
+    var canGoNext: Boolean by mutableStateOf(false)
+        private set
+
     init {
         loadProducts()
     }
@@ -34,11 +45,24 @@ class ProductListViewModel(
         loadProducts()
     }
 
+    fun nextPage() {
+        if (uiState is ProductListUiState.Loading || !canGoNext) return
+        start += DEFAULT_SEARCH_LIMIT
+        loadProducts()
+    }
+
+    fun previousPage() {
+        if (uiState is ProductListUiState.Loading || !canGoPrevious) return
+        start = (start - DEFAULT_SEARCH_LIMIT).coerceAtLeast(DEFAULT_SEARCH_START)
+        loadProducts()
+    }
+
     private fun loadProducts() {
         viewModelScope.launch(dispatcher) {
             uiState = ProductListUiState.Loading
-            searchRepository.search(query)
+            searchRepository.search(query, start = start, limit = DEFAULT_SEARCH_LIMIT)
                 .onSuccess { result ->
+                    updatePaging(result)
                     uiState = if (result.products.isEmpty()) {
                         ProductListUiState.Empty
                     } else {
@@ -46,10 +70,16 @@ class ProductListViewModel(
                     }
                 }
                 .onFailure { error ->
+                    canGoNext = false
                     uiState = ProductListUiState.Error(
                         error.message?.takeIf { it.isNotBlank() } ?: "Couldn't load products",
                     )
                 }
         }
+    }
+
+    private fun updatePaging(result: SearchResult) {
+        canGoPrevious = start > DEFAULT_SEARCH_START
+        canGoNext = start + result.products.size < result.total
     }
 }
