@@ -156,7 +156,11 @@ private fun ProductList(
     ) {
         item {
             Text(
-                text = stringResource(Res.string.product_results_count, result.total),
+                text = stringResource(
+                    Res.string.product_results_count,
+                    result.products.size,
+                    result.total,
+                ),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(bottom = AppDimensions.PaddingExtraSmall),
