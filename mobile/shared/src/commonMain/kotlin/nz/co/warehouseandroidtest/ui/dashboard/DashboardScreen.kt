@@ -33,11 +33,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.viewmodel.compose.viewModel
 import nz.co.warehouseandroidtest.ui.theme.AppDimensions
 import nz.co.warehouseandroidtest.ui.theme.WarehouseTheme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
 import warehousekmpapp.shared.generated.resources.Res
 import warehousekmpapp.shared.generated.resources.clear_search
 import warehousekmpapp.shared.generated.resources.dashboard_title
@@ -51,7 +51,7 @@ import warehousekmpapp.shared.generated.resources.welcome_subtitle
 @Composable
 fun DashboardScreen(
     modifier: Modifier = Modifier,
-    viewModel: DashboardViewModel = viewModel { DashboardViewModel() },
+    viewModel: DashboardViewModel = koinViewModel(),
 ) {
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
