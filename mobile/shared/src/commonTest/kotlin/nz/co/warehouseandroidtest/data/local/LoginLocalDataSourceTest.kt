@@ -36,19 +36,7 @@ class LoginLocalDataSourceTest {
     }
 
     private fun sampleSession() = LoginSession(
-        customerId = "bcbPyICa4tvd4ifoHDRI6IU31B",
-        preferredBranchIds = emptyList(),
-        eReceiptsPreferred = false,
-        isTeamMember = false,
-        isStaff = false,
-        masterEmailOptIn = false,
+        token = "test-twl-token",
         expiresDatetime = "2099-09-01T22:29:04Z",
-        expiryMinutes = 29,
-        guest = true,
-        platformDemandWare = "QAT",
-        environment = "Azure QAT",
-        developmentPlatform = true,
-        apiVersion = 4.9,
-        requestedApiVersion = 4.6,
     )
 }

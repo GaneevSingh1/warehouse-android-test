@@ -2,7 +2,6 @@ package nz.co.warehouseandroidtest.data.repository
 
 import nz.co.warehouseandroidtest.data.local.LoginLocalDataSource
 import nz.co.warehouseandroidtest.data.remote.login.LoginRemoteDataSource
-import nz.co.warehouseandroidtest.data.remote.login.toSession
 import nz.co.warehouseandroidtest.domain.model.LoginSession
 import nz.co.warehouseandroidtest.domain.model.isExpired
 
@@ -11,7 +10,7 @@ class LoginRepository(
     private val localDataSource: LoginLocalDataSource,
 ) {
     suspend fun login(): LoginSession {
-        val session = remoteDataSource.login().toSession()
+        val session = remoteDataSource.login()
         localDataSource.save(session)
         return session
     }

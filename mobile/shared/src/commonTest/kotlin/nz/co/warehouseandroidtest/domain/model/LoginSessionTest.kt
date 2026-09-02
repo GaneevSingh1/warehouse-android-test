@@ -24,19 +24,7 @@ class LoginSessionTest {
     }
 
     private fun session(expiresDatetime: String) = LoginSession(
-        customerId = "id",
-        preferredBranchIds = emptyList(),
-        eReceiptsPreferred = false,
-        isTeamMember = false,
-        isStaff = false,
-        masterEmailOptIn = false,
+        token = "test-twl-token",
         expiresDatetime = expiresDatetime,
-        expiryMinutes = 29,
-        guest = true,
-        platformDemandWare = "QAT",
-        environment = "Azure QAT",
-        developmentPlatform = true,
-        apiVersion = 4.9,
-        requestedApiVersion = 4.6,
     )
 }

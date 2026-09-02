@@ -1,48 +1,25 @@
 package nz.co.warehouseandroidtest.data.remote.login
 
-import kotlinx.serialization.Serializable
-import nz.co.warehouseandroidtest.data.remote.UnauthenticatedApiClient
+import io.ktor.client.HttpClient
+import nz.co.warehouseandroidtest.data.remote.HEADER_TWL_TOKEN
+import nz.co.warehouseandroidtest.data.remote.HEADER_TWL_TOKEN_EXPIRES
+import nz.co.warehouseandroidtest.data.remote.getRelative
 import nz.co.warehouseandroidtest.domain.model.LoginSession
 
-internal const val LOGIN_PATH = "Login.json"
-
-@Serializable
-data class LoginResponseDto(
-    val customerId: String,
-    val preferredBranchIds: List<Int> = emptyList(),
-    val eReceiptsPreferred: Boolean,
-    val isTeamMember: Boolean,
-    val isStaff: Boolean,
-    val masterEmailOptIn: Boolean,
-    val expiresDatetime: String,
-    val expiryMinutes: Int,
-    val guest: Boolean,
-    val platformDemandWare: String,
-    val environment: String,
-    val developmentPlatform: Boolean,
-    val apiVersion: Double,
-    val requestedApiVersion: Double,
-)
-
-fun LoginResponseDto.toSession(): LoginSession = LoginSession(
-    customerId = customerId,
-    preferredBranchIds = preferredBranchIds,
-    eReceiptsPreferred = eReceiptsPreferred,
-    isTeamMember = isTeamMember,
-    isStaff = isStaff,
-    masterEmailOptIn = masterEmailOptIn,
-    expiresDatetime = expiresDatetime,
-    expiryMinutes = expiryMinutes,
-    guest = guest,
-    platformDemandWare = platformDemandWare,
-    environment = environment,
-    developmentPlatform = developmentPlatform,
-    apiVersion = apiVersion,
-    requestedApiVersion = requestedApiVersion,
-)
+internal const val LOGIN_PATH = "/Login.json"
 
 class LoginRemoteDataSource(
-    private val apiClient: UnauthenticatedApiClient,
+    private val httpClient: HttpClient,
 ) {
-    suspend fun login(): LoginResponseDto = apiClient.get(LOGIN_PATH)
+    suspend fun login(): LoginSession {
+        val response = httpClient.getRelative(LOGIN_PATH)
+        val token = response.headers[HEADER_TWL_TOKEN]
+            ?: error("Login response missing $HEADER_TWL_TOKEN header")
+        val expiresDatetime = response.headers[HEADER_TWL_TOKEN_EXPIRES]
+            ?: error("Login response missing $HEADER_TWL_TOKEN_EXPIRES header")
+        return LoginSession(
+            token = token,
+            expiresDatetime = expiresDatetime,
+        )
+    }
 }
