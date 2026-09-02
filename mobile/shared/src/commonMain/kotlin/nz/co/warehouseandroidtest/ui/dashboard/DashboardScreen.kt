@@ -33,8 +33,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import nz.co.warehouseandroidtest.ui.theme.AppDimensions
 import nz.co.warehouseandroidtest.ui.theme.WarehouseTheme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -101,21 +101,20 @@ internal fun DashboardContent(
                 .padding(innerPadding)
                 .imePadding()
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 24.dp)
-                .padding(top = 20.dp, bottom = 32.dp),
+                .padding(AppDimensions.PaddingLarge),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             WelcomeHeader()
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(AppDimensions.PaddingSmall))
             WelcomeIllustration()
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(AppDimensions.PaddingSmall))
             ProductSearchField(
                 query = query,
                 onQueryChange = onQueryChange,
                 onClearQuery = onClearQuery,
                 onSearch = onSearch,
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(AppDimensions.PaddingMedium))
             Button(
                 onClick = onSearch,
                 enabled = query.isNotBlank(),
@@ -146,7 +145,7 @@ private fun WelcomeHeader(modifier: Modifier = Modifier) {
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onBackground,
         )
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(AppDimensions.PaddingSmall))
         Text(
             text = stringResource(Res.string.welcome_subtitle),
             style = MaterialTheme.typography.bodyLarge,
@@ -186,7 +185,7 @@ private fun ProductSearchField(
             }
         },
         singleLine = true,
-        shape = RoundedCornerShape(28.dp),
+        shape = RoundedCornerShape(AppDimensions.CornerRadiusLarge),
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
         keyboardActions = KeyboardActions(onSearch = { onSearch() }),
     )
