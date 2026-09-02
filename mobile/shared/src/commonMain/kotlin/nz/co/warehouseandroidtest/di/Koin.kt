@@ -9,24 +9,13 @@ import nz.co.warehouseandroidtest.data.remote.login.LoginRemoteDataSource
 import nz.co.warehouseandroidtest.data.repository.LoginRepository
 import nz.co.warehouseandroidtest.getPlatform
 import nz.co.warehouseandroidtest.ui.dashboard.DashboardViewModel
-import org.koin.core.context.GlobalContext
-import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.core.qualifier.named
-import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
 
 val UnauthenticatedHttpClient = named("unauthenticated")
 val AuthenticatedHttpClient = named("authenticated")
-
-fun initKoin(appDeclaration: KoinAppDeclaration = {}) {
-    if (GlobalContext.getOrNull() != null) return
-    startKoin {
-        appDeclaration()
-        modules(sharedModule, platformModule)
-    }
-}
 
 val sharedModule = module {
     single<HttpClient>(UnauthenticatedHttpClient) {

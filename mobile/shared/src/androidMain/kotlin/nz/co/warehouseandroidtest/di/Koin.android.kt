@@ -1,6 +1,5 @@
 package nz.co.warehouseandroidtest.di
 
-import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import nz.co.warehouseandroidtest.data.local.LOGIN_DATA_STORE_FILE_NAME
@@ -14,11 +13,5 @@ actual val platformModule = module {
         createPreferencesDataStore {
             context.filesDir.resolve(LOGIN_DATA_STORE_FILE_NAME).absolutePath
         }
-    }
-}
-
-fun initKoin(context: Context) {
-    initKoin {
-        androidContext(context.applicationContext)
     }
 }
