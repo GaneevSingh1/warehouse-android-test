@@ -8,11 +8,11 @@ class LoginRepository(
     private val localDataSource: AuthLocalDataSource,
 ) {
     suspend fun getToken(): Result<String> {
-        localDataSource.get()?.token?.takeIf { it.isNotBlank() }?.let { token ->
+        localDataSource.getLoginSession()?.token?.takeIf { it.isNotBlank() }?.let { token ->
             return Result.success(token)
         }
         return remoteDataSource.login().onSuccess { session ->
-            localDataSource.save(session)
+            localDataSource.saveLoginSession(session)
         }.map { it.token }
     }
 }

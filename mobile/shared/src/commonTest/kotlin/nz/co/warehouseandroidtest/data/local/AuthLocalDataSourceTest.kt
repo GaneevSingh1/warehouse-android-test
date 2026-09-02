@@ -9,30 +9,30 @@ import nz.co.warehouseandroidtest.domain.model.LoginSession
 class AuthLocalDataSourceTest {
 
     @Test
-    fun save_thenGet_returnsPersistedSession() = runTest {
+    fun save_LoginSession_thenGet_LoginSession_returnsPersistedSession() = runTest {
         val dataSource = AuthLocalDataSource()
         val session = sampleSession()
 
-        dataSource.save(session)
+        dataSource.saveLoginSession(session)
 
-        assertEquals(session, dataSource.get())
+        assertEquals(session, dataSource.getLoginSession())
     }
 
     @Test
-    fun get_returnsNullWhenEmpty() = runTest {
+    fun get_LoginSession_returnsNullWhenEmpty() = runTest {
         val dataSource = AuthLocalDataSource()
 
-        assertNull(dataSource.get())
+        assertNull(dataSource.getLoginSession())
     }
 
     @Test
-    fun clear_removesPersistedSession() = runTest {
+    fun clear_LoginSession_removesPersistedSession() = runTest {
         val dataSource = AuthLocalDataSource()
-        dataSource.save(sampleSession())
+        dataSource.saveLoginSession(sampleSession())
 
-        dataSource.clear()
+        dataSource.clearLoginSession()
 
-        assertNull(dataSource.get())
+        assertNull(dataSource.getLoginSession())
     }
 
     private fun sampleSession() = LoginSession(

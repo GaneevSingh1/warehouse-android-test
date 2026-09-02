@@ -18,7 +18,7 @@ class LoginRepositoryTest {
     @Test
     fun getToken_returnsLocalTokenWithoutCallingRemote() = runTest {
         val localDataSource = AuthLocalDataSource()
-        localDataSource.save(
+        localDataSource.saveLoginSession(
             LoginSession(token = "cached-token", expiresDatetime = LOGIN_TOKEN_EXPIRES),
         )
         val repository = LoginRepository(
@@ -42,8 +42,8 @@ class LoginRepositoryTest {
         val token = repository.getToken().getOrThrow()
 
         assertEquals(LOGIN_TOKEN, token)
-        assertEquals(LOGIN_TOKEN, localDataSource.get()?.token)
-        assertEquals(LOGIN_TOKEN_EXPIRES, localDataSource.get()?.expiresDatetime)
+        assertEquals(LOGIN_TOKEN, localDataSource.getLoginSession()?.token)
+        assertEquals(LOGIN_TOKEN_EXPIRES, localDataSource.getLoginSession()?.expiresDatetime)
     }
 
     @Test
@@ -59,6 +59,6 @@ class LoginRepositoryTest {
         val result = repository.getToken()
 
         assertTrue(result.isFailure)
-        assertNull(localDataSource.get())
+        assertNull(localDataSource.getLoginSession())
     }
 }

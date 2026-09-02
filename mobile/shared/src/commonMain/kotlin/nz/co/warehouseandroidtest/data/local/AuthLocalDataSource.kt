@@ -5,13 +5,13 @@ import nz.co.warehouseandroidtest.domain.model.LoginSession
 class AuthLocalDataSource {
     private var session: LoginSession? = null
 
-    suspend fun save(session: LoginSession) {
+    fun saveLoginSession(session: LoginSession) {
         this.session = session
     }
 
-    suspend fun get(): LoginSession? = session
+    fun getLoginSession(): LoginSession? = session
 
-    suspend fun clear() {
+    fun clearLoginSession() {
         session = null
     }
 }
