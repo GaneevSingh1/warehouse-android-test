@@ -50,6 +50,7 @@ import warehousekmpapp.shared.generated.resources.welcome_subtitle
 
 @Composable
 fun DashboardScreen(
+    onSearchSubmitted: (String) -> Unit = {},
     modifier: Modifier = Modifier,
     viewModel: DashboardViewModel = koinViewModel(),
 ) {
@@ -63,7 +64,7 @@ fun DashboardScreen(
         onSearch = {
             focusManager.clearFocus()
             keyboardController?.hide()
-            viewModel.search()
+            viewModel.search()?.let(onSearchSubmitted)
         },
         modifier = modifier,
     )

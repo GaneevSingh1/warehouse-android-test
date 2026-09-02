@@ -5,4 +5,13 @@
     <string name="search_products_placeholder">Search products</string>
     <string name="search_action">Search</string>
     <string name="clear_search">Clear search</string>
+    <string name="product_list_title">Search results</string>
+    <string name="product_results_count">%1$d results</string>
+    <string name="product_image">Image of %1$s</string>
+    <string name="no_products_found">No products found</string>
+    <string name="no_products_found_message">Try a different search term</string>
+    <string name="search_error_title">Couldn\'t load products</string>
+    <string name="search_error_message">Check your connection and try again</string>
+    <string name="retry_action">Retry</string>
+    <string name="navigate_back">Back</string>
 </resources>

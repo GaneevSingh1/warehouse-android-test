@@ -20,10 +20,11 @@ class DashboardViewModel : ViewModel() {
         query = ""
     }
 
-    fun search() {
+    fun search(): String? {
         val trimmed = query.trim()
-        if (trimmed.isEmpty()) return
+        if (trimmed.isEmpty()) return null
         query = trimmed
         submittedQuery = trimmed
+        return trimmed
     }
 }

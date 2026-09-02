@@ -11,4 +11,10 @@ object AppDimensions {
 
     val CornerRadiusMedium = 12.dp
     val CornerRadiusLarge = 28.dp
+
+    val ProductImageSize = 88.dp
+    val PlaceholderIconSize = 32.dp
+    val EmptyStateIconSize = 56.dp
+    val ImageSpinnerSize = 24.dp
+    val CardElevation = 1.dp
 }

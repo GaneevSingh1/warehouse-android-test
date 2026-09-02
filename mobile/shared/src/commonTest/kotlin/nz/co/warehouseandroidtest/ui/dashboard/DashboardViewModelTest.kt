@@ -30,8 +30,7 @@ class DashboardViewModelTest {
         val viewModel = DashboardViewModel()
         viewModel.onQueryChange("   ")
 
-        viewModel.search()
-
+        assertNull(viewModel.search())
         assertNull(viewModel.submittedQuery)
     }
 
@@ -40,8 +39,7 @@ class DashboardViewModelTest {
         val viewModel = DashboardViewModel()
         viewModel.onQueryChange("  milk  ")
 
-        viewModel.search()
-
+        assertEquals("milk", viewModel.search())
         assertEquals("milk", viewModel.query)
         assertEquals("milk", viewModel.submittedQuery)
     }

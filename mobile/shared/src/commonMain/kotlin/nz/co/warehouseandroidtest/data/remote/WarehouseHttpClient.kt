@@ -10,6 +10,7 @@ import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.plugin
 import io.ktor.client.request.get
 import io.ktor.client.request.header
+import io.ktor.client.request.parameter
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import io.ktor.client.statement.request
@@ -73,9 +74,14 @@ internal fun HttpClient.installTwlTokenInterceptor(tokenProvider: TwlTokenProvid
 
 internal suspend fun <T> HttpClient.getResult(
     url: String,
-    parse: (HttpResponse) -> T,
+    parameters: Map<String, String> = emptyMap(),
+    parse: suspend (HttpResponse) -> T,
 ): Result<T> = runApiCatching {
-    val response = get(url)
+    val response = get(url) {
+        parameters.forEach { (name, value) ->
+            parameter(name, value)
+        }
+    }
     if (!response.status.isSuccess()) {
         handleFailure(response)
     }
@@ -102,7 +108,7 @@ private suspend fun handleFailure(response: HttpResponse): Nothing {
     error(details)
 }
 
-private inline fun <T> runApiCatching(block: () -> T): Result<T> = try {
+private suspend inline fun <T> runApiCatching(block: suspend () -> T): Result<T> = try {
     Result.success(block())
 } catch (e: CancellationException) {
     throw e
