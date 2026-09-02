@@ -24,11 +24,11 @@ val sharedModule = module {
         )
     }
     single<HttpClient>(AuthenticatedHttpClient) {
-        val authLocalDataSource: AuthLocalDataSource = get()
+        val loginRepository: LoginRepository = get()
         createWarehouseHttpClient(
             subscriptionKey = GeneratedApiConfig.SUBSCRIPTION_KEY,
             device = getPlatform().twlDeviceHeader,
-        ).installTwlTokenInterceptor { authLocalDataSource.get()?.token }
+        ).installTwlTokenInterceptor { loginRepository.getToken().getOrNull() }
     }
     single { LoginRemoteDataSource(get(UnauthenticatedHttpClient)) }
     single { AuthLocalDataSource() }

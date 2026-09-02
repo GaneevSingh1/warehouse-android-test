@@ -11,27 +11,43 @@ import nz.co.warehouseandroidtest.data.LOGIN_TOKEN_EXPIRES
 import nz.co.warehouseandroidtest.data.local.AuthLocalDataSource
 import nz.co.warehouseandroidtest.data.mockUnauthenticatedHttpClient
 import nz.co.warehouseandroidtest.data.remote.login.LoginRemoteDataSource
+import nz.co.warehouseandroidtest.domain.model.LoginSession
 
 class LoginRepositoryTest {
 
     @Test
-    fun login_storesResultAndTokenInLocalDataSource() = runTest {
+    fun getToken_returnsLocalTokenWithoutCallingRemote() = runTest {
+        val localDataSource = AuthLocalDataSource()
+        localDataSource.save(
+            LoginSession(token = "cached-token", expiresDatetime = LOGIN_TOKEN_EXPIRES),
+        )
+        val repository = LoginRepository(
+            remoteDataSource = LoginRemoteDataSource(
+                mockUnauthenticatedHttpClient(status = HttpStatusCode.Unauthorized),
+            ),
+            localDataSource = localDataSource,
+        )
+
+        assertEquals("cached-token", repository.getToken().getOrThrow())
+    }
+
+    @Test
+    fun getToken_fetchesFromRemoteWhenLocalIsEmpty() = runTest {
         val localDataSource = AuthLocalDataSource()
         val repository = LoginRepository(
             remoteDataSource = LoginRemoteDataSource(mockUnauthenticatedHttpClient()),
             localDataSource = localDataSource,
         )
 
-        val session = repository.login().getOrThrow()
+        val token = repository.getToken().getOrThrow()
 
-        assertEquals(LOGIN_TOKEN, session.token)
-        assertEquals(LOGIN_TOKEN_EXPIRES, session.expiresDatetime)
-        assertEquals(session, localDataSource.get())
-        assertEquals(session, repository.getCachedSession())
+        assertEquals(LOGIN_TOKEN, token)
+        assertEquals(LOGIN_TOKEN, localDataSource.get()?.token)
+        assertEquals(LOGIN_TOKEN_EXPIRES, localDataSource.get()?.expiresDatetime)
     }
 
     @Test
-    fun login_doesNotStoreSessionWhenRequestFails() = runTest {
+    fun getToken_doesNotStoreSessionWhenRemoteFails() = runTest {
         val localDataSource = AuthLocalDataSource()
         val repository = LoginRepository(
             remoteDataSource = LoginRemoteDataSource(
@@ -40,7 +56,7 @@ class LoginRepositoryTest {
             localDataSource = localDataSource,
         )
 
-        val result = repository.login()
+        val result = repository.getToken()
 
         assertTrue(result.isFailure)
         assertNull(localDataSource.get())

@@ -2,15 +2,17 @@ package nz.co.warehouseandroidtest.data.repository
 
 import nz.co.warehouseandroidtest.data.local.AuthLocalDataSource
 import nz.co.warehouseandroidtest.data.remote.login.LoginRemoteDataSource
-import nz.co.warehouseandroidtest.domain.model.LoginSession
 
 class LoginRepository(
     private val remoteDataSource: LoginRemoteDataSource,
     private val localDataSource: AuthLocalDataSource,
 ) {
-    suspend fun login(): Result<LoginSession> = remoteDataSource.login().onSuccess { session ->
-        localDataSource.save(session)
+    suspend fun getToken(): Result<String> {
+        localDataSource.get()?.token?.takeIf { it.isNotBlank() }?.let { token ->
+            return Result.success(token)
+        }
+        return remoteDataSource.login().onSuccess { session ->
+            localDataSource.save(session)
+        }.map { it.token }
     }
-
-    suspend fun getCachedSession(): LoginSession? = localDataSource.get()
 }
