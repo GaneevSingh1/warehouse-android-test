@@ -20,12 +20,11 @@ fun App() {
     }
 }
 
-private fun createImageLoader(context: PlatformContext): ImageLoader =
-    ImageLoader.Builder(context)
-        .components {
-            add(KtorNetworkFetcherFactory())
-        }
-        .build()
+private fun createImageLoader(context: PlatformContext): ImageLoader = ImageLoader.Builder(context)
+    .components {
+        add(KtorNetworkFetcherFactory())
+    }
+    .build()
 
 @Preview
 @Composable
