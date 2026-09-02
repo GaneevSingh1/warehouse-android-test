@@ -2,12 +2,14 @@ package nz.co.warehouseandroidtest.data
 
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
+import io.ktor.client.engine.mock.MockEngineConfig
 import io.ktor.client.engine.mock.respond
 import io.ktor.client.request.HttpRequestData
 import io.ktor.http.ContentType
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
+import kotlinx.coroutines.Dispatchers
 import nz.co.warehouseandroidtest.data.remote.HEADER_TWL_TOKEN
 import nz.co.warehouseandroidtest.data.remote.HEADER_TWL_TOKEN_EXPIRES
 import nz.co.warehouseandroidtest.data.remote.createWarehouseHttpClient
@@ -45,39 +47,45 @@ internal fun mockUnauthenticatedHttpClient(
     json: String = LOGIN_RESPONSE_JSON,
     status: HttpStatusCode = HttpStatusCode.OK,
     onRequest: (HttpRequestData) -> Unit = {},
-): HttpClient {
-    val engine = MockEngine { request ->
-        onRequest(request)
-        respond(
-            content = json.trimIndent(),
-            status = status,
-            headers = loginResponseHeaders(),
-        )
-    }
-    return createWarehouseHttpClient(
-        subscriptionKey = "test-subscription-key",
-        device = "Android",
-        engine = engine,
-    )
-}
+): HttpClient = createWarehouseHttpClient(
+    subscriptionKey = "test-subscription-key",
+    device = "Android",
+    engine = mockEngine(json, status, loginResponseHeaders(), onRequest),
+)
 
 internal fun mockAuthenticatedHttpClient(
+    json: String = "{}",
+    status: HttpStatusCode = HttpStatusCode.OK,
     tokenProvider: suspend () -> String? = { LOGIN_TOKEN },
     onRequest: (HttpRequestData) -> Unit = {},
-): HttpClient {
-    val engine = MockEngine { request ->
-        onRequest(request)
-        respond(
-            content = "{}",
-            status = HttpStatusCode.OK,
-            headers = Headers.build {
-                append(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            },
-        )
-    }
-    return createWarehouseHttpClient(
-        subscriptionKey = "test-subscription-key",
-        device = "Android",
-        engine = engine,
-    ).installTwlTokenInterceptor(tokenProvider)
-}
+): HttpClient = createWarehouseHttpClient(
+    subscriptionKey = "test-subscription-key",
+    device = "Android",
+    engine = mockEngine(
+        json = json,
+        status = status,
+        headers = Headers.build {
+            append(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+        },
+        onRequest = onRequest,
+    ),
+).installTwlTokenInterceptor(tokenProvider)
+
+private fun mockEngine(
+    json: String,
+    status: HttpStatusCode,
+    headers: Headers,
+    onRequest: (HttpRequestData) -> Unit,
+): MockEngine = MockEngine(
+    MockEngineConfig().apply {
+        dispatcher = Dispatchers.Unconfined
+        addHandler { request ->
+            onRequest(request)
+            respond(
+                content = json.trimIndent(),
+                status = status,
+                headers = headers,
+            )
+        }
+    },
+)

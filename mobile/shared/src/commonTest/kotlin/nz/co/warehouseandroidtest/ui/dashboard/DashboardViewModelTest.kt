@@ -2,47 +2,38 @@ package nz.co.warehouseandroidtest.ui.dashboard
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNull
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.runTest
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class DashboardViewModelTest {
 
     @Test
-    fun onQueryChange_updatesQuery() {
-        val viewModel = DashboardViewModel()
+    fun onSearch_ignoresBlankQuery() = runTest {
+        val viewModel = DashboardViewModel(Dispatchers.Unconfined)
+        val received = mutableListOf<DashboardEvent>()
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.events.collect { received += it }
+        }
 
-        viewModel.onQueryChange("milk")
+        viewModel.onSearch("   ")
 
-        assertEquals("milk", viewModel.query)
+        assertEquals(emptyList(), received)
     }
 
     @Test
-    fun clearQuery_resetsQuery() {
-        val viewModel = DashboardViewModel()
-        viewModel.onQueryChange("milk")
+    fun onSearch_trimsQueryAndEmitsSearchSubmitted() = runTest {
+        val viewModel = DashboardViewModel(Dispatchers.Unconfined)
+        val received = mutableListOf<DashboardEvent>()
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.events.collect { received += it }
+        }
 
-        viewModel.clearQuery()
+        viewModel.onSearch("  milk  ")
 
-        assertEquals("", viewModel.query)
-    }
-
-    @Test
-    fun search_ignoresBlankQuery() {
-        val viewModel = DashboardViewModel()
-        viewModel.onQueryChange("   ")
-
-        viewModel.search()
-
-        assertNull(viewModel.submittedQuery)
-    }
-
-    @Test
-    fun search_trimsAndSubmitsQuery() {
-        val viewModel = DashboardViewModel()
-        viewModel.onQueryChange("  milk  ")
-
-        viewModel.search()
-
-        assertEquals("milk", viewModel.query)
-        assertEquals("milk", viewModel.submittedQuery)
+        assertEquals(DashboardEvent.SearchSubmitted("milk"), received.single())
     }
 }

@@ -6,7 +6,9 @@ import nz.co.warehouseandroidtest.data.remote.GeneratedApiConfig
 import nz.co.warehouseandroidtest.data.remote.createWarehouseHttpClient
 import nz.co.warehouseandroidtest.data.remote.installTwlTokenInterceptor
 import nz.co.warehouseandroidtest.data.remote.login.LoginRemoteDataSource
+import nz.co.warehouseandroidtest.data.remote.search.SearchRemoteDataSource
 import nz.co.warehouseandroidtest.data.repository.LoginRepository
+import nz.co.warehouseandroidtest.data.repository.SearchRepository
 import nz.co.warehouseandroidtest.getPlatform
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -29,6 +31,8 @@ val dataModule = module {
         ).installTwlTokenInterceptor { loginRepository.getToken().getOrNull() }
     }
     single { LoginRemoteDataSource(get(UnauthenticatedHttpClient)) }
+    single { SearchRemoteDataSource(get(AuthenticatedHttpClient)) }
     single { AuthLocalDataSource() }
     single { LoginRepository(get(), get()) }
+    single { SearchRepository(get()) }
 }

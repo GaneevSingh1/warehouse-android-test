@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -25,6 +24,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
@@ -50,21 +54,31 @@ import warehousekmpapp.shared.generated.resources.welcome_subtitle
 
 @Composable
 fun DashboardScreen(
+    onSearchSubmitted: (String) -> Unit = {},
     modifier: Modifier = Modifier,
     viewModel: DashboardViewModel = koinViewModel(),
 ) {
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
+    var query by rememberSaveable { mutableStateOf("") }
+
+    LaunchedEffect(viewModel) {
+        viewModel.events.collect { event ->
+            when (event) {
+                is DashboardEvent.SearchSubmitted -> {
+                    focusManager.clearFocus()
+                    keyboardController?.hide()
+                    onSearchSubmitted(event.query)
+                }
+            }
+        }
+    }
 
     DashboardContent(
-        query = viewModel.query,
-        onQueryChange = viewModel::onQueryChange,
-        onClearQuery = viewModel::clearQuery,
-        onSearch = {
-            focusManager.clearFocus()
-            keyboardController?.hide()
-            viewModel.search()
-        },
+        query = query,
+        onQueryChange = { query = it },
+        onClearQuery = { query = "" },
+        onSearch = viewModel::onSearch,
         modifier = modifier,
     )
 }
@@ -75,7 +89,7 @@ internal fun DashboardContent(
     query: String,
     onQueryChange: (String) -> Unit,
     onClearQuery: () -> Unit,
-    onSearch: () -> Unit,
+    onSearch: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -99,7 +113,6 @@ internal fun DashboardContent(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .imePadding()
                 .verticalScroll(rememberScrollState())
                 .padding(AppDimensions.PaddingLarge),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -112,11 +125,11 @@ internal fun DashboardContent(
                 query = query,
                 onQueryChange = onQueryChange,
                 onClearQuery = onClearQuery,
-                onSearch = onSearch,
+                onSearch = { onSearch(query) },
             )
             Spacer(modifier = Modifier.height(AppDimensions.PaddingMedium))
             Button(
-                onClick = onSearch,
+                onClick = { onSearch(query) },
                 enabled = query.isNotBlank(),
                 modifier = Modifier.fillMaxWidth(),
             ) {
@@ -160,7 +173,7 @@ private fun ProductSearchField(
     query: String,
     onQueryChange: (String) -> Unit,
     onClearQuery: () -> Unit,
-    onSearch: () -> Unit,
+    onSearch: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     OutlinedTextField(
@@ -187,7 +200,7 @@ private fun ProductSearchField(
         singleLine = true,
         shape = RoundedCornerShape(AppDimensions.CornerRadiusLarge),
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-        keyboardActions = KeyboardActions(onSearch = { onSearch() }),
+        keyboardActions = KeyboardActions(onSearch = { onSearch(query) }),
     )
 }
 
