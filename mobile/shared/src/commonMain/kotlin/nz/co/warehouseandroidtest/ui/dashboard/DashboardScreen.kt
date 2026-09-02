@@ -25,6 +25,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
@@ -57,15 +58,23 @@ fun DashboardScreen(
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
 
+    LaunchedEffect(viewModel) {
+        viewModel.events.collect { event ->
+            when (event) {
+                is DashboardEvent.SearchSubmitted -> {
+                    focusManager.clearFocus()
+                    keyboardController?.hide()
+                    onSearchSubmitted(event.query)
+                }
+            }
+        }
+    }
+
     DashboardContent(
         query = viewModel.query,
         onQueryChange = viewModel::onQueryChange,
         onClearQuery = viewModel::clearQuery,
-        onSearch = {
-            focusManager.clearFocus()
-            keyboardController?.hide()
-            viewModel.search()?.let(onSearchSubmitted)
-        },
+        onSearch = viewModel::onSearch,
         modifier = modifier,
     )
 }
@@ -76,7 +85,7 @@ internal fun DashboardContent(
     query: String,
     onQueryChange: (String) -> Unit,
     onClearQuery: () -> Unit,
-    onSearch: () -> Unit,
+    onSearch: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -113,11 +122,11 @@ internal fun DashboardContent(
                 query = query,
                 onQueryChange = onQueryChange,
                 onClearQuery = onClearQuery,
-                onSearch = onSearch,
+                onSearch = { onSearch(query) },
             )
             Spacer(modifier = Modifier.height(AppDimensions.PaddingMedium))
             Button(
-                onClick = onSearch,
+                onClick = { onSearch(query) },
                 enabled = query.isNotBlank(),
                 modifier = Modifier.fillMaxWidth(),
             ) {
@@ -161,7 +170,7 @@ private fun ProductSearchField(
     query: String,
     onQueryChange: (String) -> Unit,
     onClearQuery: () -> Unit,
-    onSearch: () -> Unit,
+    onSearch: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     OutlinedTextField(
@@ -188,7 +197,7 @@ private fun ProductSearchField(
         singleLine = true,
         shape = RoundedCornerShape(AppDimensions.CornerRadiusLarge),
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-        keyboardActions = KeyboardActions(onSearch = { onSearch() }),
+        keyboardActions = KeyboardActions(onSearch = { onSearch(query) }),
     )
 }
 

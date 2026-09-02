@@ -2,8 +2,12 @@ package nz.co.warehouseandroidtest.ui.dashboard
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNull
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.runTest
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class DashboardViewModelTest {
 
     @Test
@@ -26,21 +30,29 @@ class DashboardViewModelTest {
     }
 
     @Test
-    fun search_ignoresBlankQuery() {
+    fun onSearch_ignoresBlankQuery() = runTest {
         val viewModel = DashboardViewModel()
-        viewModel.onQueryChange("   ")
+        val received = mutableListOf<DashboardEvent>()
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.events.collect { received += it }
+        }
 
-        assertNull(viewModel.search())
-        assertNull(viewModel.submittedQuery)
+        viewModel.onSearch("   ")
+
+        assertEquals(emptyList(), received)
     }
 
     @Test
-    fun search_trimsAndSubmitsQuery() {
+    fun onSearch_trimsQueryAndEmitsSearchSubmitted() = runTest {
         val viewModel = DashboardViewModel()
-        viewModel.onQueryChange("  milk  ")
+        val received = mutableListOf<DashboardEvent>()
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.events.collect { received += it }
+        }
 
-        assertEquals("milk", viewModel.search())
+        viewModel.onSearch("  milk  ")
+
         assertEquals("milk", viewModel.query)
-        assertEquals("milk", viewModel.submittedQuery)
+        assertEquals(DashboardEvent.SearchSubmitted("milk"), received.single())
     }
 }
