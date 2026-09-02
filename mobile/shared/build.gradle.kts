@@ -1,4 +1,3 @@
-import java.util.Properties
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -14,22 +13,25 @@ val generateApiConfig by tasks.registering {
     val outputDir = layout.buildDirectory.dir("generated/apiConfig/src/commonMain/kotlin")
     outputs.dir(outputDir)
 
-    val subscriptionKey = providers.provider {
-        val properties = Properties()
-        val localProperties = rootProject.file("local.properties")
-        if (localProperties.exists()) {
-            localProperties.inputStream().use { properties.load(it) }
-        }
-        properties.getProperty("OCP_APIM_SUBSCRIPTION_KEY").orEmpty()
-    }
+    val subscriptionKey = providers.gradleProperty("OCP_APIM_SUBSCRIPTION_KEY")
+        .orElse(providers.environmentVariable("OCP_APIM_SUBSCRIPTION_KEY"))
+        .orElse("")
     inputs.property("subscriptionKey", subscriptionKey)
+    outputs.upToDateWhen { subscriptionKey.get().trim().isNotEmpty() }
 
     doLast {
+        val key = subscriptionKey.get().trim()
+        if (key.isEmpty()) {
+            throw GradleException(
+                "OCP_APIM_SUBSCRIPTION_KEY is required. Set it as a Gradle property " +
+                    "(-POCP_APIM_SUBSCRIPTION_KEY=...) or environment variable.",
+            )
+        }
         val file = outputDir.get()
             .file("nz/co/warehouseandroidtest/data/remote/GeneratedApiConfig.kt")
             .asFile
         file.parentFile.mkdirs()
-        val escapedKey = subscriptionKey.get()
+        val escapedKey = key
             .replace("\\", "\\\\")
             .replace("\"", "\\\"")
             .replace("\$", "\\\$")
