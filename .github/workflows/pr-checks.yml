@@ -14,6 +14,9 @@ defaults:
   run:
     working-directory: mobile
 
+env:
+  OCP_APIM_SUBSCRIPTION_KEY: ci
+
 jobs:
   ktlint:
     name: ktlint
