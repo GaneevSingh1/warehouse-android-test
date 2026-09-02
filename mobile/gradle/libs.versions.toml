@@ -18,6 +18,7 @@ datastore = "1.2.0"
 koin = "4.1.0"
 ktlint = "14.2.0"
 ktor = "3.5.2"
+kermit = "2.1.0"
 material3 = "1.11.0-alpha07"
 
 [libraries]
@@ -52,6 +53,7 @@ koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin" }
 koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
+kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

@@ -58,6 +58,9 @@ class UnauthenticatedHttpClientTest {
         assertTrue(result.isFailure)
         val message = result.exceptionOrNull()?.message.orEmpty()
         assertTrue(message.contains("401"))
-        assertFalse(message.contains(HEADER_TWL_TOKEN))
+        assertTrue(message.contains("URL: $LOGIN_URL"))
+        assertTrue(message.contains("Headers:"))
+        assertTrue(message.contains("Body:"))
+        assertFalse(message.contains("missing $HEADER_TWL_TOKEN"))
     }
 }

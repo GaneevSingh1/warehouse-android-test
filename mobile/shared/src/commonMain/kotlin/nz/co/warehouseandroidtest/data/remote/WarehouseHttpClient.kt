@@ -1,5 +1,6 @@
 package nz.co.warehouseandroidtest.data.remote
 
+import co.touchlab.kermit.Logger
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.HttpClientEngine
@@ -10,6 +11,8 @@ import io.ktor.client.plugins.plugin
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.bodyAsText
+import io.ktor.client.statement.request
 import io.ktor.http.HttpHeaders
 import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
@@ -20,6 +23,8 @@ internal const val HEADER_TWL_DEVICE = "X-TWL-Device"
 internal const val HEADER_SUBSCRIPTION_KEY = "Ocp-Apim-Subscription-Key"
 internal const val HEADER_TWL_TOKEN = "X-TWL-Token"
 internal const val HEADER_TWL_TOKEN_EXPIRES = "X-TWL-Token-Expires"
+
+private val logger = Logger.withTag("WarehouseHttpClient")
 
 internal val defaultJson = Json {
     ignoreUnknownKeys = true
@@ -72,9 +77,25 @@ internal suspend fun <T> HttpClient.getResult(
 ): Result<T> = runApiCatching {
     val response = get(url)
     if (!response.status.isSuccess()) {
-        error("Request failed with HTTP ${response.status}")
+        handleFailure(response)
     }
     parse(response)
+}
+
+private suspend fun handleFailure(response: HttpResponse): Nothing {
+    val body = runCatching { response.bodyAsText() }.getOrElse { "<unavailable: ${it.message}>" }
+    val headers = response.headers.entries().joinToString("\n") { (name, values) ->
+        "  $name: ${values.joinToString()}"
+    }.ifEmpty { "  <none>" }
+    val details = buildString {
+        appendLine("Request failed with HTTP ${response.status}")
+        appendLine("URL: ${response.request.url}")
+        appendLine("Headers:")
+        appendLine(headers)
+        append("Body: $body")
+    }
+    logger.e { details }
+    error(details)
 }
 
 private inline fun <T> runApiCatching(block: () -> T): Result<T> = try {
