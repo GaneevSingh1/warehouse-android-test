@@ -78,8 +78,7 @@ class ProductListViewModel(
         }
     }
 
-    private fun updatePaging(result: SearchResult) {
-        canGoPrevious = start > DEFAULT_SEARCH_START
-        canGoNext = start + result.products.size < result.total
-    }
+private fun updatePaging(result: SearchResult) {
+    canGoPrevious = start > DEFAULT_SEARCH_START
+    canGoNext = start + DEFAULT_SEARCH_LIMIT < result.total
 }
