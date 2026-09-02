@@ -8,9 +8,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -23,11 +25,13 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -41,6 +45,8 @@ import warehousekmpapp.shared.generated.resources.ic_close
 import warehousekmpapp.shared.generated.resources.ic_search
 import warehousekmpapp.shared.generated.resources.search_action
 import warehousekmpapp.shared.generated.resources.search_products_placeholder
+import warehousekmpapp.shared.generated.resources.welcome_headline
+import warehousekmpapp.shared.generated.resources.welcome_subtitle
 
 @Composable
 fun DashboardScreen(
@@ -94,9 +100,15 @@ internal fun DashboardContent(
                 .fillMaxSize()
                 .padding(innerPadding)
                 .imePadding()
+                .verticalScroll(rememberScrollState())
                 .padding(horizontal = 24.dp)
-                .padding(top = 32.dp),
+                .padding(top = 20.dp, bottom = 32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+            WelcomeHeader()
+            Spacer(modifier = Modifier.height(8.dp))
+            WelcomeIllustration()
+            Spacer(modifier = Modifier.height(8.dp))
             ProductSearchField(
                 query = query,
                 onQueryChange = onQueryChange,
@@ -118,6 +130,29 @@ internal fun DashboardContent(
                 Text(text = stringResource(Res.string.search_action))
             }
         }
+    }
+}
+
+@Composable
+private fun WelcomeHeader(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(
+            text = stringResource(Res.string.welcome_headline),
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.onBackground,
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = stringResource(Res.string.welcome_subtitle),
+            style = MaterialTheme.typography.bodyLarge,
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 
