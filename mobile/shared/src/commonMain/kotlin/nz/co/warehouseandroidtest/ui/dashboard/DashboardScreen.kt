@@ -26,6 +26,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
@@ -57,6 +61,7 @@ fun DashboardScreen(
 ) {
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
+    var query by rememberSaveable { mutableStateOf("") }
 
     LaunchedEffect(viewModel) {
         viewModel.events.collect { event ->
@@ -71,9 +76,9 @@ fun DashboardScreen(
     }
 
     DashboardContent(
-        query = viewModel.query,
-        onQueryChange = viewModel::onQueryChange,
-        onClearQuery = viewModel::clearQuery,
+        query = query,
+        onQueryChange = { query = it },
+        onClearQuery = { query = "" },
         onSearch = viewModel::onSearch,
         modifier = modifier,
     )
