@@ -8,8 +8,7 @@ import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
 import nz.co.warehouseandroidtest.data.LOGIN_TOKEN
 import nz.co.warehouseandroidtest.data.LOGIN_TOKEN_EXPIRES
-import nz.co.warehouseandroidtest.data.local.InMemoryPreferencesDataStore
-import nz.co.warehouseandroidtest.data.local.LoginLocalDataSource
+import nz.co.warehouseandroidtest.data.local.AuthLocalDataSource
 import nz.co.warehouseandroidtest.data.mockUnauthenticatedHttpClient
 import nz.co.warehouseandroidtest.data.remote.login.LoginRemoteDataSource
 
@@ -17,7 +16,7 @@ class LoginRepositoryTest {
 
     @Test
     fun login_storesResultAndTokenInLocalDataSource() = runTest {
-        val localDataSource = LoginLocalDataSource(InMemoryPreferencesDataStore())
+        val localDataSource = AuthLocalDataSource()
         val repository = LoginRepository(
             remoteDataSource = LoginRemoteDataSource(mockUnauthenticatedHttpClient()),
             localDataSource = localDataSource,
@@ -33,7 +32,7 @@ class LoginRepositoryTest {
 
     @Test
     fun login_doesNotStoreSessionWhenRequestFails() = runTest {
-        val localDataSource = LoginLocalDataSource(InMemoryPreferencesDataStore())
+        val localDataSource = AuthLocalDataSource()
         val repository = LoginRepository(
             remoteDataSource = LoginRemoteDataSource(
                 mockUnauthenticatedHttpClient(status = HttpStatusCode.Unauthorized),

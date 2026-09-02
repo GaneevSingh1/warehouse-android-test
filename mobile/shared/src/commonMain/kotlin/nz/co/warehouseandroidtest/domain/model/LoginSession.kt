@@ -3,9 +3,7 @@ package nz.co.warehouseandroidtest.domain.model
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
-import kotlinx.serialization.Serializable
 
-@Serializable
 data class LoginSession(
     val token: String,
     val expiresDatetime: String,

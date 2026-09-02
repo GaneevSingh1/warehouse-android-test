@@ -6,11 +6,11 @@ import kotlin.test.assertNull
 import kotlinx.coroutines.test.runTest
 import nz.co.warehouseandroidtest.domain.model.LoginSession
 
-class LoginLocalDataSourceTest {
+class AuthLocalDataSourceTest {
 
     @Test
     fun save_thenGet_returnsPersistedSession() = runTest {
-        val dataSource = LoginLocalDataSource(InMemoryPreferencesDataStore())
+        val dataSource = AuthLocalDataSource()
         val session = sampleSession()
 
         dataSource.save(session)
@@ -20,14 +20,14 @@ class LoginLocalDataSourceTest {
 
     @Test
     fun get_returnsNullWhenEmpty() = runTest {
-        val dataSource = LoginLocalDataSource(InMemoryPreferencesDataStore())
+        val dataSource = AuthLocalDataSource()
 
         assertNull(dataSource.get())
     }
 
     @Test
     fun clear_removesPersistedSession() = runTest {
-        val dataSource = LoginLocalDataSource(InMemoryPreferencesDataStore())
+        val dataSource = AuthLocalDataSource()
         dataSource.save(sampleSession())
 
         dataSource.clear()
