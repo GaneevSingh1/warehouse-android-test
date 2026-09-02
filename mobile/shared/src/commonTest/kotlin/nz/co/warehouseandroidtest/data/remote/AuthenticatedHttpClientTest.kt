@@ -1,5 +1,6 @@
 package nz.co.warehouseandroidtest.data.remote
 
+import io.ktor.client.request.get
 import io.ktor.http.HttpHeaders
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -25,7 +26,7 @@ class AuthenticatedHttpClientTest {
             capturedSubscriptionKey = request.headers[HEADER_SUBSCRIPTION_KEY].orEmpty()
         }
 
-        httpClient.getRelative("/Search.json")
+        httpClient.get("https://legacy-apim.twg.co.nz/twgCSharpTest/Search.json")
 
         assertEquals(LOGIN_TOKEN, capturedToken)
         assertEquals("Guest", capturedAuthorization)

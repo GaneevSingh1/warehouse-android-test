@@ -11,11 +11,11 @@ import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpHeaders
-import io.ktor.http.appendPathSegments
+import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
+import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.serialization.json.Json
 
-internal const val API_BASE_URL = "https://legacy-apim.twg.co.nz/twgCSharpTest/"
 internal const val HEADER_TWL_DEVICE = "X-TWL-Device"
 internal const val HEADER_SUBSCRIPTION_KEY = "Ocp-Apim-Subscription-Key"
 internal const val HEADER_TWL_TOKEN = "X-TWL-Token"
@@ -43,7 +43,6 @@ internal fun createWarehouseHttpClient(
             json(json)
         }
         defaultRequest {
-            url(API_BASE_URL)
             header(HttpHeaders.Authorization, "Guest")
             header(HEADER_TWL_DEVICE, device)
             header(HEADER_SUBSCRIPTION_KEY, subscriptionKey)
@@ -67,6 +66,21 @@ internal fun HttpClient.installTwlTokenInterceptor(tokenProvider: TwlTokenProvid
     return this
 }
 
-internal suspend fun HttpClient.getRelative(path: String): HttpResponse = get {
-    url.appendPathSegments(path.trimStart('/'))
+internal suspend fun <T> HttpClient.getResult(
+    url: String,
+    parse: (HttpResponse) -> T,
+): Result<T> = runApiCatching {
+    val response = get(url)
+    if (!response.status.isSuccess()) {
+        error("Request failed with HTTP ${response.status}")
+    }
+    parse(response)
+}
+
+private inline fun <T> runApiCatching(block: () -> T): Result<T> = try {
+    Result.success(block())
+} catch (e: CancellationException) {
+    throw e
+} catch (e: Throwable) {
+    Result.failure(e)
 }

@@ -1,14 +1,17 @@
 package nz.co.warehouseandroidtest.data.remote
 
 import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
 import nz.co.warehouseandroidtest.data.LOGIN_RESPONSE_JSON
 import nz.co.warehouseandroidtest.data.LOGIN_TOKEN
 import nz.co.warehouseandroidtest.data.LOGIN_TOKEN_EXPIRES
 import nz.co.warehouseandroidtest.data.mockUnauthenticatedHttpClient
-import nz.co.warehouseandroidtest.data.remote.login.LOGIN_PATH
+import nz.co.warehouseandroidtest.data.remote.login.LOGIN_URL
 import nz.co.warehouseandroidtest.data.remote.login.LoginRemoteDataSource
 
 class UnauthenticatedHttpClientTest {
@@ -27,9 +30,10 @@ class UnauthenticatedHttpClientTest {
             capturedSubscriptionKey = request.headers[HEADER_SUBSCRIPTION_KEY].orEmpty()
         }
 
-        LoginRemoteDataSource(httpClient).login()
+        val result = LoginRemoteDataSource(httpClient).login()
 
-        assertEquals("https://legacy-apim.twg.co.nz/twgCSharpTest$LOGIN_PATH", capturedUrl)
+        assertTrue(result.isSuccess)
+        assertEquals(LOGIN_URL, capturedUrl)
         assertEquals("Guest", capturedAuthorization)
         assertEquals("Android", capturedDevice)
         assertEquals("test-subscription-key", capturedSubscriptionKey)
@@ -39,9 +43,21 @@ class UnauthenticatedHttpClientTest {
     fun login_readsTokenAndExpiryHeaders() = runTest {
         val session = LoginRemoteDataSource(
             mockUnauthenticatedHttpClient(LOGIN_RESPONSE_JSON),
-        ).login()
+        ).login().getOrThrow()
 
         assertEquals(LOGIN_TOKEN, session.token)
         assertEquals(LOGIN_TOKEN_EXPIRES, session.expiresDatetime)
+    }
+
+    @Test
+    fun login_returnsFailureOnHttpErrorInsteadOfMissingHeader() = runTest {
+        val result = LoginRemoteDataSource(
+            mockUnauthenticatedHttpClient(status = HttpStatusCode.Unauthorized),
+        ).login()
+
+        assertTrue(result.isFailure)
+        val message = result.exceptionOrNull()?.message.orEmpty()
+        assertTrue(message.contains("401"))
+        assertFalse(message.contains(HEADER_TWL_TOKEN))
     }
 }

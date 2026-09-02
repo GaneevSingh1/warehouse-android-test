@@ -8,10 +8,8 @@ class LoginRepository(
     private val remoteDataSource: LoginRemoteDataSource,
     private val localDataSource: LoginLocalDataSource,
 ) {
-    suspend fun login(): LoginSession {
-        val session = remoteDataSource.login()
+    suspend fun login(): Result<LoginSession> = remoteDataSource.login().onSuccess { session ->
         localDataSource.save(session)
-        return session
     }
 
     suspend fun getCachedSession(): LoginSession? = localDataSource.get()

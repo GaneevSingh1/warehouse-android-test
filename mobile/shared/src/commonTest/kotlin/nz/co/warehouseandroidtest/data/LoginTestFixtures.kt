@@ -43,13 +43,14 @@ internal fun loginResponseHeaders(token: String = LOGIN_TOKEN): Headers = Header
 
 internal fun mockUnauthenticatedHttpClient(
     json: String = LOGIN_RESPONSE_JSON,
+    status: HttpStatusCode = HttpStatusCode.OK,
     onRequest: (HttpRequestData) -> Unit = {},
 ): HttpClient {
     val engine = MockEngine { request ->
         onRequest(request)
         respond(
             content = json.trimIndent(),
-            status = HttpStatusCode.OK,
+            status = status,
             headers = loginResponseHeaders(),
         )
     }
