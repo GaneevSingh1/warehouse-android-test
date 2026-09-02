@@ -83,14 +83,14 @@ internal suspend fun <T> HttpClient.getResult(
 }
 
 private suspend fun handleFailure(response: HttpResponse): Nothing {
-val body = runCatching { response.bodyAsText() }.getOrElse { "<unavailable: ${it.message}>" }
-val headers = response.headers.entries().joinToString("\n") { (name, values) ->
-    val renderedValue = when (name) {
-        HEADER_SUBSCRIPTION_KEY, HEADER_TWL_TOKEN, HEADER_TWL_TOKEN_EXPIRES -> "<redacted>"
-        else -> values.joinToString()
-    }
-    "  $name: $renderedValue"
-}.ifEmpty { "  <none>" }
+    val body = runCatching { response.bodyAsText() }.getOrElse { "<unavailable: ${it.message}>" }
+    val headers = response.headers.entries().joinToString("\n") { (name, values) ->
+        val renderedValue = when (name) {
+            HEADER_SUBSCRIPTION_KEY, HEADER_TWL_TOKEN, HEADER_TWL_TOKEN_EXPIRES -> "<redacted>"
+            else -> values.joinToString()
+        }
+        "  $name: $renderedValue"
+    }.ifEmpty { "  <none>" }
     val details = buildString {
         appendLine("Request failed with HTTP ${response.status}")
         appendLine("URL: ${response.request.url}")
