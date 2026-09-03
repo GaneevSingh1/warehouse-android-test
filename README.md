@@ -119,7 +119,7 @@ Login is implemented, but there is **no login screen**. The first search or prod
 
 ## Assumptions
 
-- **Guest-only.** No account, barcode scanner, or store-specific inventory. The dashboard greeting (“Hey Jane”) is placeholder copy.
+- **Guest-only.** No account, barcode scanner, or store-specific inventory. The dashboard greeting (“Hey Dennis”) is placeholder copy.
 - **Subscription key is the real gate.** The guest token is implemented for completeness; product APIs do not seem to need it.
 - **In-memory session is enough.** The token is not persisted. A process restart logs in again on the next API call.
 - **Search is keyword + offset pagination.** The API also returns sorts and facets; the UI does not use them.
