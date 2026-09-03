@@ -6,7 +6,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.SingletonImageLoader
-import coil3.network.ktor3.KtorNetworkFetcherFactory
 import nz.co.warehouseandroidtest.ui.dashboard.DashboardScreen
 import nz.co.warehouseandroidtest.ui.dashboard.DashboardViewModel
 import nz.co.warehouseandroidtest.ui.navigation.AppNavHost
@@ -20,11 +19,10 @@ fun App() {
     }
 }
 
-private fun createImageLoader(context: PlatformContext): ImageLoader = ImageLoader.Builder(context)
-    .components {
-        add(KtorNetworkFetcherFactory())
-    }
-    .build()
+private fun createImageLoader(context: PlatformContext): ImageLoader =
+    ImageLoader.Builder(context)
+        .addPlatformNetworkFetcher()
+        .build()
 
 @Preview
 @Composable

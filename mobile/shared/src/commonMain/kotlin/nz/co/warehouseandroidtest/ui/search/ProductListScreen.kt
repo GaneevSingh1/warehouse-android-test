@@ -14,7 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -38,7 +38,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import coil3.compose.SubcomposeAsyncImage
+import coil3.compose.AsyncImage
 import kotlin.math.abs
 import kotlin.math.roundToInt
 import nz.co.warehouseandroidtest.domain.search.Product
@@ -196,10 +196,10 @@ private fun ProductList(
                 modifier = Modifier.padding(bottom = AppDimensions.PaddingExtraSmall),
             )
         }
-        items(
+        itemsIndexed(
             items = result.products,
-            key = { it.id },
-        ) { product ->
+            key = { index, product -> "${product.id}-$index" },
+        ) { _, product ->
             ProductCard(product = product)
         }
         if (canGoPrevious || canGoNext) {
@@ -317,6 +317,7 @@ private fun ProductImage(
     modifier: Modifier = Modifier,
 ) {
     val shape = RoundedCornerShape(AppDimensions.CornerRadiusMedium)
+    val placeholder = painterResource(Res.drawable.ic_package)
     Box(
         modifier = modifier
             .size(AppDimensions.ProductImageSize)
@@ -327,13 +328,13 @@ private fun ProductImage(
         if (imageUrl.isNullOrBlank()) {
             ProductImagePlaceholder()
         } else {
-            SubcomposeAsyncImage(
+            AsyncImage(
                 model = imageUrl,
                 contentDescription = stringResource(Res.string.product_image, productName),
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop,
-                loading = { CircularProgressIndicator(modifier = Modifier.size(AppDimensions.ImageSpinnerSize)) },
-                error = { ProductImagePlaceholder() },
+                placeholder = placeholder,
+                error = placeholder,
             )
         }
     }

@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
@@ -25,7 +26,7 @@ sealed interface ProductListUiState {
 class ProductListViewModel(
     val query: String,
     private val searchRepository: SearchRepository,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.Main,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : ViewModel() {
     var uiState: ProductListUiState by mutableStateOf(ProductListUiState.Loading)
         private set
