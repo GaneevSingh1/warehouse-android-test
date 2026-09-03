@@ -14,6 +14,8 @@ object AppDimensions {
     val CornerRadiusLarge = 28.dp
 
     val ProductImageSize = 88.dp
+    val FeaturedProductCardWidth = 160.dp
+    val FeaturedProductImageSize = 160.dp
     val ProductHeroImageHeight = 280.dp
     val PlaceholderIconSize = 32.dp
     val EmptyStateIconSize = 56.dp

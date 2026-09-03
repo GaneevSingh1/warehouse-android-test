@@ -1,7 +1,11 @@
 package nz.co.warehouseandroidtest.ui.dashboard
 
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,6 +20,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -39,6 +44,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import nz.co.warehouseandroidtest.domain.search.Product
+import nz.co.warehouseandroidtest.ui.common.FeaturedProductCard
 import nz.co.warehouseandroidtest.ui.theme.AppDimensions
 import nz.co.warehouseandroidtest.ui.theme.WarehouseTheme
 import org.jetbrains.compose.resources.painterResource
@@ -47,9 +54,13 @@ import org.koin.compose.viewmodel.koinViewModel
 import warehousekmpapp.shared.generated.resources.Res
 import warehousekmpapp.shared.generated.resources.clear_search
 import warehousekmpapp.shared.generated.resources.dashboard_title
+import warehousekmpapp.shared.generated.resources.fathers_day_heading
 import warehousekmpapp.shared.generated.resources.ic_close
 import warehousekmpapp.shared.generated.resources.ic_search
+import warehousekmpapp.shared.generated.resources.retry_action
 import warehousekmpapp.shared.generated.resources.search_action
+import warehousekmpapp.shared.generated.resources.search_error_message
+import warehousekmpapp.shared.generated.resources.search_error_title
 import warehousekmpapp.shared.generated.resources.search_products_placeholder
 import warehousekmpapp.shared.generated.resources.welcome_headline
 import warehousekmpapp.shared.generated.resources.welcome_subtitle
@@ -57,6 +68,7 @@ import warehousekmpapp.shared.generated.resources.welcome_subtitle
 @Composable
 fun DashboardScreen(
     onSearchSubmitted: (String) -> Unit = {},
+    onProductClick: (String) -> Unit = {},
     modifier: Modifier = Modifier,
     viewModel: DashboardViewModel = koinViewModel(),
 ) {
@@ -81,6 +93,9 @@ fun DashboardScreen(
         onQueryChange = { query = it },
         onClearQuery = { query = "" },
         onSearch = viewModel::onSearch,
+        fathersDayUiState = viewModel.fathersDayUiState,
+        onProductClick = onProductClick,
+        onRetryFathersDay = viewModel::retryFathersDay,
         modifier = modifier,
     )
 }
@@ -92,6 +107,9 @@ internal fun DashboardContent(
     onQueryChange: (String) -> Unit,
     onClearQuery: () -> Unit,
     onSearch: (String) -> Unit,
+    fathersDayUiState: FathersDayUiState,
+    onProductClick: (String) -> Unit,
+    onRetryFathersDay: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val focusManager = LocalFocusManager.current
@@ -147,6 +165,82 @@ internal fun DashboardContent(
                 Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
                 Text(text = stringResource(Res.string.search_action))
             }
+            if (fathersDayUiState != FathersDayUiState.Empty) {
+                Spacer(modifier = Modifier.height(AppDimensions.PaddingExtraLarge))
+                FathersDaySection(
+                    uiState = fathersDayUiState,
+                    onProductClick = onProductClick,
+                    onRetry = onRetryFathersDay,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun FathersDaySection(
+    uiState: FathersDayUiState,
+    onProductClick: (String) -> Unit,
+    onRetry: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.Start,
+    ) {
+        Text(
+            text = stringResource(Res.string.fathers_day_heading),
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onBackground,
+        )
+        Spacer(modifier = Modifier.height(AppDimensions.PaddingMedium))
+        when (uiState) {
+            FathersDayUiState.Loading -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(AppDimensions.FeaturedProductImageSize),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
+            FathersDayUiState.Error -> {
+                Text(
+                    text = stringResource(Res.string.search_error_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onBackground,
+                )
+                Spacer(modifier = Modifier.height(AppDimensions.PaddingExtraSmall))
+                Text(
+                    text = stringResource(Res.string.search_error_message),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Spacer(modifier = Modifier.height(AppDimensions.PaddingSmall))
+                Button(onClick = onRetry) {
+                    Text(text = stringResource(Res.string.retry_action))
+                }
+            }
+            is FathersDayUiState.Success -> {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(AppDimensions.PaddingSmall),
+                    verticalAlignment = Alignment.Top,
+                ) {
+                    uiState.products.forEach { product ->
+                        FeaturedProductCard(
+                            product = product,
+                            onClick = { onProductClick(product.id) },
+                        )
+                    }
+                }
+            }
+            FathersDayUiState.Empty -> Unit
         }
     }
 }
@@ -214,6 +308,31 @@ private fun ProductSearchField(
 @Composable
 private fun DashboardScreenPreview() {
     WarehouseTheme {
-        DashboardScreen(viewModel = DashboardViewModel())
+        DashboardContent(
+            query = "",
+            onQueryChange = {},
+            onClearQuery = {},
+            onSearch = {},
+            fathersDayUiState = FathersDayUiState.Success(
+                products = listOf(
+                    Product(
+                        id = "R2820075",
+                        name = "Living & Co Stacking Stool",
+                        brand = "Living & Co",
+                        price = 15.0,
+                        imageUrl = "https://example.com/stool.jpg",
+                    ),
+                    Product(
+                        id = "R111",
+                        name = "Image Group Stool",
+                        brand = "House",
+                        price = 20.5,
+                        imageUrl = "https://example.com/group-only.jpg",
+                    ),
+                ),
+            ),
+            onProductClick = {},
+            onRetryFathersDay = {},
+        )
     }
 }

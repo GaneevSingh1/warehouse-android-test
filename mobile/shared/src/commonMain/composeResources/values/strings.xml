@@ -1,7 +1,8 @@
 <resources>
     <string name="dashboard_title">The Warehouse</string>
-    <string name="welcome_headline">Welcome</string>
-    <string name="welcome_subtitle">Find products across The Warehouse</string>
+    <string name="welcome_headline">Hey Jane! 👋</string>
+    <string name="welcome_subtitle">What are you looking for today?</string>
+    <string name="fathers_day_heading">Looking for a Father’s Day gift?</string>
     <string name="search_products_placeholder">Search products</string>
     <string name="search_action">Search</string>
     <string name="clear_search">Clear search</string>

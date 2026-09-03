@@ -32,6 +32,9 @@ fun AppNavHost(
                         }
                     }
                 },
+                onProductClick = { productId ->
+                    navController.navigate(ProductDetailsRoute(productId))
+                },
             )
         }
         composable<ProductListRoute> { backStackEntry ->
