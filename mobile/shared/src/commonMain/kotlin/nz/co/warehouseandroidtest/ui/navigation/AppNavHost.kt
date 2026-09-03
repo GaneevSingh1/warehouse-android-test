@@ -9,7 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import nz.co.warehouseandroidtest.ui.dashboard.DashboardScreen
-import nz.co.warehouseandroidtest.ui.productlist.ProductListScreen
+import nz.co.warehouseandroidtest.ui.search.ProductListScreen
 
 @Composable
 fun AppNavHost(

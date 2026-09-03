@@ -1,12 +1,9 @@
-package nz.co.warehouseandroidtest.data.repository
+package nz.co.warehouseandroidtest.data.search
 
-import nz.co.warehouseandroidtest.data.remote.search.ProductDto
-import nz.co.warehouseandroidtest.data.remote.search.SearchRemoteDataSource
-import nz.co.warehouseandroidtest.data.remote.search.resolveImageUrl
-import nz.co.warehouseandroidtest.domain.model.DEFAULT_SEARCH_LIMIT
-import nz.co.warehouseandroidtest.domain.model.DEFAULT_SEARCH_START
-import nz.co.warehouseandroidtest.domain.model.Product
-import nz.co.warehouseandroidtest.domain.model.SearchResult
+import nz.co.warehouseandroidtest.domain.search.DEFAULT_SEARCH_LIMIT
+import nz.co.warehouseandroidtest.domain.search.DEFAULT_SEARCH_START
+import nz.co.warehouseandroidtest.domain.search.Product
+import nz.co.warehouseandroidtest.domain.search.SearchResult
 
 class SearchRepository(
     private val remoteDataSource: SearchRemoteDataSource,

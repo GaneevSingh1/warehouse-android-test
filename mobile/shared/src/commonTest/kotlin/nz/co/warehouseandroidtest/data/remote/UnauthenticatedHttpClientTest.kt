@@ -7,12 +7,15 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
+import nz.co.warehouseandroidtest.data.HEADER_SUBSCRIPTION_KEY
+import nz.co.warehouseandroidtest.data.HEADER_TWL_DEVICE
+import nz.co.warehouseandroidtest.data.HEADER_TWL_TOKEN
 import nz.co.warehouseandroidtest.data.LOGIN_RESPONSE_JSON
 import nz.co.warehouseandroidtest.data.LOGIN_TOKEN
 import nz.co.warehouseandroidtest.data.LOGIN_TOKEN_EXPIRES
+import nz.co.warehouseandroidtest.data.login.LOGIN_URL
+import nz.co.warehouseandroidtest.data.login.LoginRemoteDataSource
 import nz.co.warehouseandroidtest.data.mockUnauthenticatedHttpClient
-import nz.co.warehouseandroidtest.data.remote.login.LOGIN_URL
-import nz.co.warehouseandroidtest.data.remote.login.LoginRemoteDataSource
 
 class UnauthenticatedHttpClientTest {
 
@@ -61,6 +64,6 @@ class UnauthenticatedHttpClientTest {
         assertTrue(message.contains("URL: $LOGIN_URL"))
         assertTrue(message.contains("Headers:"))
         assertTrue(message.contains("Body:"))
-        assertFalse(message.contains("missing $HEADER_TWL_TOKEN"))
+        assertFalse(message.contains("missing ${HEADER_TWL_TOKEN}"))
     }
 }

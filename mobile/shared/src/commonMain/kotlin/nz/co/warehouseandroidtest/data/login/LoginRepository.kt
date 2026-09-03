@@ -1,8 +1,6 @@
-package nz.co.warehouseandroidtest.data.repository
+package nz.co.warehouseandroidtest.data.login
 
-import nz.co.warehouseandroidtest.data.local.AuthLocalDataSource
-import nz.co.warehouseandroidtest.data.remote.login.LoginRemoteDataSource
-import nz.co.warehouseandroidtest.domain.model.isExpired
+import nz.co.warehouseandroidtest.domain.login.isExpired
 
 class LoginRepository(
     private val remoteDataSource: LoginRemoteDataSource,

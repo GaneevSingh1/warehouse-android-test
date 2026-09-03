@@ -1,4 +1,4 @@
-package nz.co.warehouseandroidtest.data.remote
+package nz.co.warehouseandroidtest.data
 
 import co.touchlab.kermit.Logger
 import io.ktor.client.HttpClient

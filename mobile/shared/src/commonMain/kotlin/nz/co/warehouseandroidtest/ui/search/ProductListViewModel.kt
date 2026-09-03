@@ -1,4 +1,4 @@
-package nz.co.warehouseandroidtest.ui.productlist
+package nz.co.warehouseandroidtest.ui.search
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -8,10 +8,10 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import nz.co.warehouseandroidtest.data.repository.SearchRepository
-import nz.co.warehouseandroidtest.domain.model.DEFAULT_SEARCH_LIMIT
-import nz.co.warehouseandroidtest.domain.model.DEFAULT_SEARCH_START
-import nz.co.warehouseandroidtest.domain.model.SearchResult
+import nz.co.warehouseandroidtest.data.search.SearchRepository
+import nz.co.warehouseandroidtest.domain.search.DEFAULT_SEARCH_LIMIT
+import nz.co.warehouseandroidtest.domain.search.DEFAULT_SEARCH_START
+import nz.co.warehouseandroidtest.domain.search.SearchResult
 
 sealed interface ProductListUiState {
     data object Loading : ProductListUiState

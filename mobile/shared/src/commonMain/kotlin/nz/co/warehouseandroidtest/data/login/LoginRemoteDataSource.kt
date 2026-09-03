@@ -1,10 +1,10 @@
-package nz.co.warehouseandroidtest.data.remote.login
+package nz.co.warehouseandroidtest.data.login
 
 import io.ktor.client.HttpClient
-import nz.co.warehouseandroidtest.data.remote.HEADER_TWL_TOKEN
-import nz.co.warehouseandroidtest.data.remote.HEADER_TWL_TOKEN_EXPIRES
-import nz.co.warehouseandroidtest.data.remote.getResult
-import nz.co.warehouseandroidtest.domain.model.LoginSession
+import nz.co.warehouseandroidtest.data.HEADER_TWL_TOKEN
+import nz.co.warehouseandroidtest.data.HEADER_TWL_TOKEN_EXPIRES
+import nz.co.warehouseandroidtest.data.getResult
+import nz.co.warehouseandroidtest.domain.login.LoginSession
 
 internal const val LOGIN_URL = "https://legacy-apim.twg.co.nz/twgCSharpTest/Login.json"
 

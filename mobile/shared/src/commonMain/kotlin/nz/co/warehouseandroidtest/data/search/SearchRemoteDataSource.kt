@@ -1,10 +1,10 @@
-package nz.co.warehouseandroidtest.data.remote.search
+package nz.co.warehouseandroidtest.data.search
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
-import nz.co.warehouseandroidtest.data.remote.getResult
-import nz.co.warehouseandroidtest.domain.model.DEFAULT_SEARCH_LIMIT
-import nz.co.warehouseandroidtest.domain.model.DEFAULT_SEARCH_START
+import nz.co.warehouseandroidtest.data.getResult
+import nz.co.warehouseandroidtest.domain.search.DEFAULT_SEARCH_LIMIT
+import nz.co.warehouseandroidtest.domain.search.DEFAULT_SEARCH_START
 
 internal const val SEARCH_URL = "https://legacy-apim.twg.co.nz/twgCSharpTest/Search.json"
 

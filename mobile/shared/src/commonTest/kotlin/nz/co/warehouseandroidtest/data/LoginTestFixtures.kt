@@ -10,10 +10,6 @@ import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.Dispatchers
-import nz.co.warehouseandroidtest.data.remote.HEADER_TWL_TOKEN
-import nz.co.warehouseandroidtest.data.remote.HEADER_TWL_TOKEN_EXPIRES
-import nz.co.warehouseandroidtest.data.remote.createWarehouseHttpClient
-import nz.co.warehouseandroidtest.data.remote.installTwlTokenInterceptor
 
 internal const val LOGIN_TOKEN = "test-twl-token"
 internal const val LOGIN_TOKEN_EXPIRES = "2099-09-01T22:29:04Z"

@@ -1,14 +1,14 @@
 package nz.co.warehouseandroidtest.di
 
 import io.ktor.client.HttpClient
-import nz.co.warehouseandroidtest.data.local.AuthLocalDataSource
+import nz.co.warehouseandroidtest.data.login.AuthLocalDataSource
+import nz.co.warehouseandroidtest.data.login.LoginRemoteDataSource
+import nz.co.warehouseandroidtest.data.login.LoginRepository
 import nz.co.warehouseandroidtest.data.remote.GeneratedApiConfig
-import nz.co.warehouseandroidtest.data.remote.createWarehouseHttpClient
-import nz.co.warehouseandroidtest.data.remote.installTwlTokenInterceptor
-import nz.co.warehouseandroidtest.data.remote.login.LoginRemoteDataSource
-import nz.co.warehouseandroidtest.data.remote.search.SearchRemoteDataSource
-import nz.co.warehouseandroidtest.data.repository.LoginRepository
-import nz.co.warehouseandroidtest.data.repository.SearchRepository
+import nz.co.warehouseandroidtest.data.createWarehouseHttpClient
+import nz.co.warehouseandroidtest.data.installTwlTokenInterceptor
+import nz.co.warehouseandroidtest.data.search.SearchRemoteDataSource
+import nz.co.warehouseandroidtest.data.search.SearchRepository
 import nz.co.warehouseandroidtest.getPlatform
 import org.koin.core.qualifier.named
 import org.koin.dsl.module

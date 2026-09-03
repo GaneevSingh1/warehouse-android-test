@@ -1,4 +1,4 @@
-package nz.co.warehouseandroidtest.domain.model
+package nz.co.warehouseandroidtest.domain.login
 
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime

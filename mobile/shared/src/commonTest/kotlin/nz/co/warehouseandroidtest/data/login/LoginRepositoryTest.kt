@@ -1,4 +1,4 @@
-package nz.co.warehouseandroidtest.data.repository
+package nz.co.warehouseandroidtest.data.login
 
 import io.ktor.http.HttpStatusCode
 import kotlin.test.Test
@@ -9,10 +9,8 @@ import kotlinx.coroutines.test.runTest
 import nz.co.warehouseandroidtest.data.EXPIRED_TOKEN_EXPIRES
 import nz.co.warehouseandroidtest.data.LOGIN_TOKEN
 import nz.co.warehouseandroidtest.data.LOGIN_TOKEN_EXPIRES
-import nz.co.warehouseandroidtest.data.local.AuthLocalDataSource
 import nz.co.warehouseandroidtest.data.mockUnauthenticatedHttpClient
-import nz.co.warehouseandroidtest.data.remote.login.LoginRemoteDataSource
-import nz.co.warehouseandroidtest.domain.model.LoginSession
+import nz.co.warehouseandroidtest.domain.login.LoginSession
 
 class LoginRepositoryTest {
 

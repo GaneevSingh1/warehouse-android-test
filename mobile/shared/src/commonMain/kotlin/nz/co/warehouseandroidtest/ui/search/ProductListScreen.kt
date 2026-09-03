@@ -1,4 +1,4 @@
-package nz.co.warehouseandroidtest.ui.productlist
+package nz.co.warehouseandroidtest.ui.search
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -41,8 +41,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import coil3.compose.SubcomposeAsyncImage
 import kotlin.math.abs
 import kotlin.math.roundToInt
-import nz.co.warehouseandroidtest.domain.model.Product
-import nz.co.warehouseandroidtest.domain.model.SearchResult
+import nz.co.warehouseandroidtest.domain.search.Product
+import nz.co.warehouseandroidtest.domain.search.SearchResult
 import nz.co.warehouseandroidtest.ui.theme.AppDimensions
 import nz.co.warehouseandroidtest.ui.theme.WarehouseTheme
 import org.jetbrains.compose.resources.painterResource

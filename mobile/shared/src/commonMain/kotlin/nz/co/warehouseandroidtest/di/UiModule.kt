@@ -1,7 +1,7 @@
 package nz.co.warehouseandroidtest.di
 
 import nz.co.warehouseandroidtest.ui.dashboard.DashboardViewModel
-import nz.co.warehouseandroidtest.ui.productlist.ProductListViewModel
+import nz.co.warehouseandroidtest.ui.search.ProductListViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 

@@ -15,14 +15,19 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest
+import nz.co.warehouseandroidtest.data.HEADER_SUBSCRIPTION_KEY
+import nz.co.warehouseandroidtest.data.HEADER_TWL_DEVICE
+import nz.co.warehouseandroidtest.data.HEADER_TWL_TOKEN
 import nz.co.warehouseandroidtest.data.LOGIN_TOKEN
 import nz.co.warehouseandroidtest.data.LOGIN_TOKEN_EXPIRES
-import nz.co.warehouseandroidtest.data.local.AuthLocalDataSource
+import nz.co.warehouseandroidtest.data.createWarehouseHttpClient
+import nz.co.warehouseandroidtest.data.installTwlTokenInterceptor
+import nz.co.warehouseandroidtest.data.login.AuthLocalDataSource
+import nz.co.warehouseandroidtest.data.login.LoginRemoteDataSource
+import nz.co.warehouseandroidtest.data.login.LoginRepository
 import nz.co.warehouseandroidtest.data.mockAuthenticatedHttpClient
 import nz.co.warehouseandroidtest.data.mockUnauthenticatedHttpClient
-import nz.co.warehouseandroidtest.data.remote.login.LoginRemoteDataSource
-import nz.co.warehouseandroidtest.data.repository.LoginRepository
-import nz.co.warehouseandroidtest.domain.model.LoginSession
+import nz.co.warehouseandroidtest.domain.login.LoginSession
 
 class AuthenticatedHttpClientTest {
 

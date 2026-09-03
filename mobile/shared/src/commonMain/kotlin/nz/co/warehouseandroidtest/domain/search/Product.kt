@@ -1,4 +1,4 @@
-package nz.co.warehouseandroidtest.domain.model
+package nz.co.warehouseandroidtest.domain.search
 
 const val DEFAULT_SEARCH_START = 0
 const val DEFAULT_SEARCH_LIMIT = 20
