@@ -16,4 +16,21 @@
     <string name="search_error_message">Check your connection and try again</string>
     <string name="retry_action">Retry</string>
     <string name="navigate_back">Back</string>
+    <string name="product_details_title">Product</string>
+    <string name="product_details_error_title">Couldn't load product</string>
+    <string name="product_details_error_message">Check your connection and try again</string>
+    <string name="product_on_special">On special</string>
+    <string name="product_clearance">Clearance</string>
+    <string name="product_in_stock">In stock</string>
+    <string name="product_out_of_stock">Out of stock</string>
+    <string name="product_stock_count">%1$d available</string>
+    <string name="product_sold_online">Available online</string>
+    <string name="product_click_and_collect">Click &amp; Collect</string>
+    <string name="product_description_heading">Description</string>
+    <string name="product_features_heading">Features</string>
+    <string name="product_offers_heading">Offers</string>
+    <string name="product_market_club">MarketClub exclusive</string>
+    <string name="product_colour_label">Colour: %1$s</string>
+    <string name="product_id_label">Product ID: %1$s</string>
+    <string name="product_barcode_label">Barcode: %1$s</string>
 </resources>

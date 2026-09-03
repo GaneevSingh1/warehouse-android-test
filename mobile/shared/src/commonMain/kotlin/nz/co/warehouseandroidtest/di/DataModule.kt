@@ -6,6 +6,8 @@ import nz.co.warehouseandroidtest.data.installTwlTokenInterceptor
 import nz.co.warehouseandroidtest.data.login.AuthLocalDataSource
 import nz.co.warehouseandroidtest.data.login.LoginRemoteDataSource
 import nz.co.warehouseandroidtest.data.login.LoginRepository
+import nz.co.warehouseandroidtest.data.product.ProductRemoteDataSource
+import nz.co.warehouseandroidtest.data.product.ProductRepository
 import nz.co.warehouseandroidtest.data.remote.GeneratedApiConfig
 import nz.co.warehouseandroidtest.data.search.SearchRemoteDataSource
 import nz.co.warehouseandroidtest.data.search.SearchRepository
@@ -35,7 +37,9 @@ val dataModule = module {
     }
     single { LoginRemoteDataSource(get(UnauthenticatedHttpClient)) }
     single { SearchRemoteDataSource(get(AuthenticatedHttpClient)) }
+    single { ProductRemoteDataSource(get(AuthenticatedHttpClient)) }
     single { AuthLocalDataSource() }
     single { LoginRepository(get(), get()) }
     single { SearchRepository(get()) }
+    single { ProductRepository(get()) }
 }

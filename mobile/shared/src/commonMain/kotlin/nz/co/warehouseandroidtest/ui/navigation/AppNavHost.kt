@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import nz.co.warehouseandroidtest.ui.dashboard.DashboardScreen
+import nz.co.warehouseandroidtest.ui.productdetails.ProductDetailsScreen
 import nz.co.warehouseandroidtest.ui.search.ProductListScreen
 
 @Composable
@@ -37,6 +38,16 @@ fun AppNavHost(
             val route = backStackEntry.toRoute<ProductListRoute>()
             ProductListScreen(
                 query = route.query,
+                onBack = { navController.navigateUp() },
+                onProductClick = { productId ->
+                    navController.navigate(ProductDetailsRoute(productId))
+                },
+            )
+        }
+        composable<ProductDetailsRoute> { backStackEntry ->
+            val route = backStackEntry.toRoute<ProductDetailsRoute>()
+            ProductDetailsScreen(
+                productId = route.productId,
                 onBack = { navController.navigateUp() },
             )
         }
