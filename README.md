@@ -82,9 +82,11 @@ androidApp / iosApp
 | Layer | Role |
 |---|---|
 | **UI** | Compose screens, ViewModels, type-safe Navigation Compose routes |
-| **Domain** | `Product`, `SearchResult`, `ProductDetails`, `LoginSession` |
+| **Domain** | Models only: `Product`, `SearchResult`, `ProductDetails`, `LoginSession` |
 | **Data** | Repositories map API DTOs; Ktor talks to Azure APIM |
 | **DI** | Koin modules (`dataModule`, `uiModule`) |
+
+**No use-case layer.** ViewModels call repositories directly. This is a small app, so a domain/use-case layer would add extra code without much benefit. It is omitted on purpose.
 
 ### Screens
 
