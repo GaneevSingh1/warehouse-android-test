@@ -54,7 +54,7 @@ class ProductDetailsViewModel(
                             ?.lineSequence()
                             ?.firstOrNull()
                             ?.takeIf { it.isNotBlank() }
-                            ?: "Couldn't load product",
+                            .orEmpty(),
                     )
                 }
         }
