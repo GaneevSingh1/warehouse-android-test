@@ -24,7 +24,12 @@ fun AppNavHost(
         composable<DashboardRoute> {
             DashboardScreen(
                 onSearchSubmitted = { query ->
-                    navController.navigate(ProductListRoute(query))
+                    navController.navigate(ProductListRoute(query)) {
+                        launchSingleTop = true
+                        popUpTo(DashboardRoute) {
+                            inclusive = false
+                        }
+                    }
                 },
             )
         }

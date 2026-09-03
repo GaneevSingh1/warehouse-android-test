@@ -5,6 +5,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.plugins.HttpSend
+import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.plugin
@@ -26,6 +27,10 @@ internal const val HEADER_TWL_DEVICE = "X-TWL-Device"
 internal const val HEADER_SUBSCRIPTION_KEY = "Ocp-Apim-Subscription-Key"
 internal const val HEADER_TWL_TOKEN = "X-TWL-Token"
 internal const val HEADER_TWL_TOKEN_EXPIRES = "X-TWL-Token-Expires"
+
+internal const val DEFAULT_REQUEST_TIMEOUT_MS = 30_000L
+internal const val DEFAULT_CONNECT_TIMEOUT_MS = 15_000L
+internal const val DEFAULT_SOCKET_TIMEOUT_MS = 30_000L
 
 private val logger = Logger.withTag("WarehouseHttpClient")
 
@@ -49,6 +54,11 @@ internal fun createWarehouseHttpClient(
     val config: HttpClientConfig<*>.() -> Unit = {
         install(ContentNegotiation) {
             json(json)
+        }
+        install(HttpTimeout) {
+            requestTimeoutMillis = DEFAULT_REQUEST_TIMEOUT_MS
+            connectTimeoutMillis = DEFAULT_CONNECT_TIMEOUT_MS
+            socketTimeoutMillis = DEFAULT_SOCKET_TIMEOUT_MS
         }
         defaultRequest {
             header(HttpHeaders.Authorization, "Guest")

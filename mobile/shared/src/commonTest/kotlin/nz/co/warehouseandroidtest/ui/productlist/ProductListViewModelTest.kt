@@ -12,9 +12,9 @@ import kotlinx.coroutines.test.runTest
 import nz.co.warehouseandroidtest.data.EMPTY_SEARCH_RESPONSE_JSON
 import nz.co.warehouseandroidtest.data.SEARCH_RESPONSE_JSON
 import nz.co.warehouseandroidtest.data.mockAuthenticatedHttpClient
-import nz.co.warehouseandroidtest.data.remote.search.DEFAULT_SEARCH_LIMIT
 import nz.co.warehouseandroidtest.data.remote.search.SearchRemoteDataSource
 import nz.co.warehouseandroidtest.data.repository.SearchRepository
+import nz.co.warehouseandroidtest.domain.model.DEFAULT_SEARCH_LIMIT
 
 class ProductListViewModelTest {
 
@@ -45,8 +45,7 @@ class ProductListViewModelTest {
             dispatcher = Dispatchers.Unconfined,
         )
 
-        val state = assertIs<ProductListUiState.Error>(viewModel.uiState)
-        assertTrue(state.message.contains("401"))
+        assertEquals(ProductListUiState.Error, viewModel.uiState)
     }
 
     @Test

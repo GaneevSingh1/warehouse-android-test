@@ -8,16 +8,16 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import nz.co.warehouseandroidtest.data.remote.search.DEFAULT_SEARCH_LIMIT
-import nz.co.warehouseandroidtest.data.remote.search.DEFAULT_SEARCH_START
 import nz.co.warehouseandroidtest.data.repository.SearchRepository
+import nz.co.warehouseandroidtest.domain.model.DEFAULT_SEARCH_LIMIT
+import nz.co.warehouseandroidtest.domain.model.DEFAULT_SEARCH_START
 import nz.co.warehouseandroidtest.domain.model.SearchResult
 
 sealed interface ProductListUiState {
     data object Loading : ProductListUiState
     data class Success(val result: SearchResult) : ProductListUiState
     data object Empty : ProductListUiState
-    data class Error(val message: String) : ProductListUiState
+    data object Error : ProductListUiState
 }
 
 class ProductListViewModel(
@@ -69,15 +69,9 @@ class ProductListViewModel(
                         ProductListUiState.Success(result)
                     }
                 }
-                .onFailure { error ->
+                .onFailure {
                     canGoNext = false
-                    uiState = ProductListUiState.Error(
-                        error.message
-                            ?.lineSequence()
-                            ?.firstOrNull()
-                            ?.takeIf { it.isNotBlank() }
-                            ?: "Couldn't load products",
-                    )
+                    uiState = ProductListUiState.Error
                 }
         }
     }

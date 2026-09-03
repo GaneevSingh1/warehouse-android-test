@@ -1,5 +1,8 @@
 package nz.co.warehouseandroidtest.domain.model
 
+const val DEFAULT_SEARCH_START = 0
+const val DEFAULT_SEARCH_LIMIT = 20
+
 data class Product(
     val id: String,
     val name: String,
