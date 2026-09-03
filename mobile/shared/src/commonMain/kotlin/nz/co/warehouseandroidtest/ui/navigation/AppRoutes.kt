@@ -7,3 +7,6 @@ data object DashboardRoute
 
 @Serializable
 data class ProductListRoute(val query: String)
+
+@Serializable
+data class ProductDetailsRoute(val productId: String)

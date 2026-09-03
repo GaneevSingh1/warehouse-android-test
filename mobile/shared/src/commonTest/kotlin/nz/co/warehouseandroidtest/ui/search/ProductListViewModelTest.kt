@@ -24,6 +24,7 @@ import nz.co.warehouseandroidtest.data.mockAuthenticatedHttpClient
 import nz.co.warehouseandroidtest.data.search.SearchRemoteDataSource
 import nz.co.warehouseandroidtest.data.search.SearchRepository
 import nz.co.warehouseandroidtest.domain.search.DEFAULT_SEARCH_LIMIT
+import nz.co.warehouseandroidtest.ui.common.formatPrice
 
 class ProductListViewModelTest {
 

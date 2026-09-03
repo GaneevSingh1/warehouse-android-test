@@ -39,10 +39,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import coil3.compose.AsyncImage
-import kotlin.math.abs
-import kotlin.math.roundToInt
 import nz.co.warehouseandroidtest.domain.search.Product
 import nz.co.warehouseandroidtest.domain.search.SearchResult
+import nz.co.warehouseandroidtest.ui.common.formatPrice
 import nz.co.warehouseandroidtest.ui.theme.AppDimensions
 import nz.co.warehouseandroidtest.ui.theme.WarehouseTheme
 import org.jetbrains.compose.resources.painterResource
@@ -69,6 +68,7 @@ import warehousekmpapp.shared.generated.resources.search_error_title
 fun ProductListScreen(
     query: String,
     onBack: () -> Unit,
+    onProductClick: (String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ProductListViewModel = koinViewModel(key = query) { parametersOf(query) },
 ) {
@@ -79,6 +79,7 @@ fun ProductListScreen(
         canGoPrevious = viewModel.canGoPrevious,
         canGoNext = viewModel.canGoNext,
         onBack = onBack,
+        onProductClick = onProductClick,
         onRetry = viewModel::retry,
         onPreviousPage = viewModel::previousPage,
         onNextPage = viewModel::nextPage,
@@ -95,6 +96,7 @@ internal fun ProductListContent(
     canGoPrevious: Boolean,
     canGoNext: Boolean,
     onBack: () -> Unit,
+    onProductClick: (String) -> Unit,
     onRetry: () -> Unit,
     onPreviousPage: () -> Unit,
     onNextPage: () -> Unit,
@@ -154,6 +156,7 @@ internal fun ProductListContent(
                 start = start,
                 canGoPrevious = canGoPrevious,
                 canGoNext = canGoNext,
+                onProductClick = onProductClick,
                 onPreviousPage = onPreviousPage,
                 onNextPage = onNextPage,
                 contentPadding = innerPadding,
@@ -168,6 +171,7 @@ private fun ProductList(
     start: Int,
     canGoPrevious: Boolean,
     canGoNext: Boolean,
+    onProductClick: (String) -> Unit,
     onPreviousPage: () -> Unit,
     onNextPage: () -> Unit,
     contentPadding: PaddingValues,
@@ -200,7 +204,10 @@ private fun ProductList(
             items = result.products,
             key = { index, product -> "${product.id}-$index" },
         ) { _, product ->
-            ProductCard(product = product)
+            ProductCard(
+                product = product,
+                onClick = { onProductClick(product.id) },
+            )
         }
         if (canGoPrevious || canGoNext) {
             item(key = "pagination") {
@@ -255,12 +262,15 @@ private fun PaginationBar(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ProductCard(
     product: Product,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Card(
+        onClick = onClick,
         modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface,
@@ -433,13 +443,6 @@ private fun ErrorState(
     }
 }
 
-internal fun formatPrice(price: Double): String {
-    val cents = (price * 100).roundToInt()
-    val dollars = cents / 100
-    val remainder = abs(cents % 100)
-    return "$$dollars.${remainder.toString().padStart(2, '0')}"
-}
-
 @Preview
 @Composable
 private fun ProductListSuccessPreview() {
@@ -465,6 +468,7 @@ private fun ProductListSuccessPreview() {
             canGoPrevious = false,
             canGoNext = true,
             onBack = {},
+            onProductClick = {},
             onRetry = {},
             onPreviousPage = {},
             onNextPage = {},
@@ -483,6 +487,7 @@ private fun ProductListLoadingPreview() {
             canGoPrevious = false,
             canGoNext = false,
             onBack = {},
+            onProductClick = {},
             onRetry = {},
             onPreviousPage = {},
             onNextPage = {},
