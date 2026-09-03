@@ -19,10 +19,9 @@ fun App() {
     }
 }
 
-private fun createImageLoader(context: PlatformContext): ImageLoader =
-    ImageLoader.Builder(context)
-        .addPlatformNetworkFetcher()
-        .build()
+private fun createImageLoader(context: PlatformContext): ImageLoader = ImageLoader.Builder(context)
+    .addPlatformNetworkFetcher()
+    .build()
 
 @Preview
 @Composable
