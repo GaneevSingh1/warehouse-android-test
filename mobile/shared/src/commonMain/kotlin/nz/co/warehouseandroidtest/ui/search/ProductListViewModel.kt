@@ -7,6 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import nz.co.warehouseandroidtest.data.search.SearchRepository
 import nz.co.warehouseandroidtest.domain.search.DEFAULT_SEARCH_LIMIT
@@ -37,6 +39,8 @@ class ProductListViewModel(
     var canGoNext: Boolean by mutableStateOf(false)
         private set
 
+    private var loadJob: Job? = null
+
     init {
         loadProducts()
     }
@@ -58,11 +62,14 @@ class ProductListViewModel(
     }
 
     private fun loadProducts() {
-        viewModelScope.launch(dispatcher) {
-            uiState = ProductListUiState.Loading
-            searchRepository.search(query, start = start, limit = DEFAULT_SEARCH_LIMIT)
+        loadJob?.cancel()
+        uiState = ProductListUiState.Loading
+        val requestStart = start
+        loadJob = viewModelScope.launch(dispatcher) {
+            searchRepository.search(query, start = requestStart, limit = DEFAULT_SEARCH_LIMIT)
                 .onSuccess { result ->
-                    updatePaging(result)
+                    ensureActive()
+                    updatePaging(result, requestStart)
                     uiState = if (result.products.isEmpty()) {
                         ProductListUiState.Empty
                     } else {
@@ -70,14 +77,15 @@ class ProductListViewModel(
                     }
                 }
                 .onFailure {
+                    ensureActive()
                     canGoNext = false
                     uiState = ProductListUiState.Error
                 }
         }
     }
 
-    private fun updatePaging(result: SearchResult) {
-        canGoPrevious = start > DEFAULT_SEARCH_START
-        canGoNext = start + DEFAULT_SEARCH_LIMIT < result.total
+    private fun updatePaging(result: SearchResult, pageStart: Int) {
+        canGoPrevious = pageStart > DEFAULT_SEARCH_START
+        canGoNext = pageStart + DEFAULT_SEARCH_LIMIT < result.total
     }
 }

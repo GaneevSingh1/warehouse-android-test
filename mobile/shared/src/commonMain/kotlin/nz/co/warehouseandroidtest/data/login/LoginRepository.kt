@@ -1,16 +1,25 @@
 package nz.co.warehouseandroidtest.data.login
 
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import nz.co.warehouseandroidtest.domain.login.isExpired
 
 class LoginRepository(
     private val remoteDataSource: LoginRemoteDataSource,
     private val localDataSource: AuthLocalDataSource,
 ) {
+    private val refreshMutex = Mutex()
+
     suspend fun getToken(): Result<String> {
         cachedValidToken()?.let { token ->
             return Result.success(token)
         }
-        return refreshToken()
+        return refreshMutex.withLock {
+            cachedValidToken()?.let { token ->
+                return@withLock Result.success(token)
+            }
+            refreshToken()
+        }
     }
 
     fun invalidateSession() {
