@@ -28,7 +28,10 @@ val dataModule = module {
         createWarehouseHttpClient(
             subscriptionKey = GeneratedApiConfig.SUBSCRIPTION_KEY,
             device = getPlatform().twlDeviceHeader,
-        ).installTwlTokenInterceptor { loginRepository.getToken().getOrNull() }
+        ).installTwlTokenInterceptor(
+            tokenProvider = { loginRepository.getToken().getOrThrow() },
+            onUnauthorized = loginRepository::invalidateSession,
+        )
     }
     single { LoginRemoteDataSource(get(UnauthenticatedHttpClient)) }
     single { SearchRemoteDataSource(get(AuthenticatedHttpClient)) }
