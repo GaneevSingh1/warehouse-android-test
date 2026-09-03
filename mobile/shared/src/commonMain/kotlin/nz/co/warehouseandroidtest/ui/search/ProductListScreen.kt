@@ -38,7 +38,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import coil3.compose.AsyncImage
+import coil3.compose.SubcomposeAsyncImage
 import nz.co.warehouseandroidtest.domain.search.Product
 import nz.co.warehouseandroidtest.domain.search.SearchResult
 import nz.co.warehouseandroidtest.ui.common.formatPrice
@@ -327,7 +327,6 @@ private fun ProductImage(
     modifier: Modifier = Modifier,
 ) {
     val shape = RoundedCornerShape(AppDimensions.CornerRadiusMedium)
-    val placeholder = painterResource(Res.drawable.ic_package)
     Box(
         modifier = modifier
             .size(AppDimensions.ProductImageSize)
@@ -338,13 +337,15 @@ private fun ProductImage(
         if (imageUrl.isNullOrBlank()) {
             ProductImagePlaceholder()
         } else {
-            AsyncImage(
+            SubcomposeAsyncImage(
                 model = imageUrl,
                 contentDescription = stringResource(Res.string.product_image, productName),
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop,
-                placeholder = placeholder,
-                error = placeholder,
+                loading = {
+                    CircularProgressIndicator(modifier = Modifier.size(AppDimensions.ImageSpinnerSize))
+                },
+                error = { ProductImagePlaceholder() },
             )
         }
     }

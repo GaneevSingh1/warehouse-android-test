@@ -40,7 +40,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import coil3.compose.AsyncImage
+import coil3.compose.SubcomposeAsyncImage
 import nz.co.warehouseandroidtest.domain.product.ProductDetails
 import nz.co.warehouseandroidtest.domain.product.ProductPromotion
 import nz.co.warehouseandroidtest.ui.common.formatPrice
@@ -276,7 +276,6 @@ private fun ProductImageGallery(
         return
     }
     val pagerState = rememberPagerState(pageCount = { imageUrls.size })
-    val placeholder = painterResource(Res.drawable.ic_package)
     Column(modifier = modifier.fillMaxWidth()) {
         HorizontalPager(
             state = pagerState,
@@ -285,13 +284,21 @@ private fun ProductImageGallery(
                 .height(AppDimensions.ProductHeroImageHeight)
                 .background(MaterialTheme.colorScheme.surfaceVariant),
         ) { page ->
-            AsyncImage(
+            SubcomposeAsyncImage(
                 model = imageUrls[page],
                 contentDescription = stringResource(Res.string.product_image, productName),
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Fit,
-                placeholder = placeholder,
-                error = placeholder,
+                loading = {
+                    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                        CircularProgressIndicator(modifier = Modifier.size(AppDimensions.ImageSpinnerSize))
+                    }
+                },
+                error = {
+                    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                        ProductImagePlaceholder()
+                    }
+                },
             )
         }
         if (imageUrls.size > 1) {
