@@ -132,14 +132,16 @@ internal fun FeaturedProductCard(
                     overflow = TextOverflow.Ellipsis,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
-                Spacer(modifier = Modifier.height(AppDimensions.PaddingExtraSmall))
-                Text(
-                    text = product.brand.orEmpty(),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
+                product.brand?.let { brand ->
+                    Spacer(modifier = Modifier.height(AppDimensions.PaddingExtraSmall))
+                    Text(
+                        text = brand,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
                 product.price?.let { price ->
                     Spacer(modifier = Modifier.height(AppDimensions.PaddingExtraSmall))
                     Text(
