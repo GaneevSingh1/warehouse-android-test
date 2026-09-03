@@ -1,13 +1,15 @@
-package nz.co.warehouseandroidtest.data.remote
+package nz.co.warehouseandroidtest.data
 
 import co.touchlab.kermit.Logger
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.plugins.HttpSend
+import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.plugin
+import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.parameter
@@ -15,6 +17,7 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import io.ktor.client.statement.request
 import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
 import kotlin.coroutines.cancellation.CancellationException
@@ -24,6 +27,10 @@ internal const val HEADER_TWL_DEVICE = "X-TWL-Device"
 internal const val HEADER_SUBSCRIPTION_KEY = "Ocp-Apim-Subscription-Key"
 internal const val HEADER_TWL_TOKEN = "X-TWL-Token"
 internal const val HEADER_TWL_TOKEN_EXPIRES = "X-TWL-Token-Expires"
+
+internal const val DEFAULT_REQUEST_TIMEOUT_MS = 30_000L
+internal const val DEFAULT_CONNECT_TIMEOUT_MS = 15_000L
+internal const val DEFAULT_SOCKET_TIMEOUT_MS = 30_000L
 
 private val logger = Logger.withTag("WarehouseHttpClient")
 
@@ -35,7 +42,7 @@ internal val defaultJson = Json {
 }
 
 fun interface TwlTokenProvider {
-    suspend fun getToken(): String?
+    suspend fun getToken(): String
 }
 
 internal fun createWarehouseHttpClient(
@@ -47,6 +54,11 @@ internal fun createWarehouseHttpClient(
     val config: HttpClientConfig<*>.() -> Unit = {
         install(ContentNegotiation) {
             json(json)
+        }
+        install(HttpTimeout) {
+            requestTimeoutMillis = DEFAULT_REQUEST_TIMEOUT_MS
+            connectTimeoutMillis = DEFAULT_CONNECT_TIMEOUT_MS
+            socketTimeoutMillis = DEFAULT_SOCKET_TIMEOUT_MS
         }
         defaultRequest {
             header(HttpHeaders.Authorization, "Guest")
@@ -61,15 +73,29 @@ internal fun createWarehouseHttpClient(
     }
 }
 
-internal fun HttpClient.installTwlTokenInterceptor(tokenProvider: TwlTokenProvider): HttpClient {
+internal fun HttpClient.installTwlTokenInterceptor(
+    tokenProvider: TwlTokenProvider,
+    onUnauthorized: suspend () -> Unit = {},
+): HttpClient {
     plugin(HttpSend).intercept { request ->
-        val token = tokenProvider.getToken()
-        if (!token.isNullOrBlank()) {
-            request.header(HEADER_TWL_TOKEN, token)
+        applyTwlToken(request, tokenProvider.getToken())
+        val call = execute(request)
+        if (call.response.status != HttpStatusCode.Unauthorized) {
+            return@intercept call
         }
+        runCatching { call.response.bodyAsText() }
+        onUnauthorized()
+        applyTwlToken(request, tokenProvider.getToken())
         execute(request)
     }
     return this
+}
+
+private fun applyTwlToken(request: HttpRequestBuilder, token: String) {
+    val sanitized = token.takeIf { it.isNotBlank() }
+        ?: error("Missing $HEADER_TWL_TOKEN")
+    request.headers.remove(HEADER_TWL_TOKEN)
+    request.header(HEADER_TWL_TOKEN, sanitized)
 }
 
 internal suspend fun <T> HttpClient.getResult(

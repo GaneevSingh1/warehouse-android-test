@@ -1,4 +1,4 @@
-package nz.co.warehouseandroidtest.domain.model
+package nz.co.warehouseandroidtest.domain.login
 
 import kotlin.test.Test
 import kotlin.test.assertFalse

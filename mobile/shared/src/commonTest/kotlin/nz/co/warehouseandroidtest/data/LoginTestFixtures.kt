@@ -10,10 +10,6 @@ import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.Dispatchers
-import nz.co.warehouseandroidtest.data.remote.HEADER_TWL_TOKEN
-import nz.co.warehouseandroidtest.data.remote.HEADER_TWL_TOKEN_EXPIRES
-import nz.co.warehouseandroidtest.data.remote.createWarehouseHttpClient
-import nz.co.warehouseandroidtest.data.remote.installTwlTokenInterceptor
 
 internal const val LOGIN_TOKEN = "test-twl-token"
 internal const val LOGIN_TOKEN_EXPIRES = "2099-09-01T22:29:04Z"
@@ -37,26 +33,33 @@ internal const val LOGIN_RESPONSE_JSON = """
 }
 """
 
-internal fun loginResponseHeaders(token: String = LOGIN_TOKEN): Headers = Headers.build {
+internal const val EXPIRED_TOKEN_EXPIRES = "2020-01-01T00:00:00Z"
+
+internal fun loginResponseHeaders(
+    token: String = LOGIN_TOKEN,
+    expiresDatetime: String = LOGIN_TOKEN_EXPIRES,
+): Headers = Headers.build {
     append(HttpHeaders.ContentType, ContentType.Application.Json.toString())
     append(HEADER_TWL_TOKEN, token)
-    append(HEADER_TWL_TOKEN_EXPIRES, LOGIN_TOKEN_EXPIRES)
+    append(HEADER_TWL_TOKEN_EXPIRES, expiresDatetime)
 }
 
 internal fun mockUnauthenticatedHttpClient(
     json: String = LOGIN_RESPONSE_JSON,
     status: HttpStatusCode = HttpStatusCode.OK,
+    expiresDatetime: String = LOGIN_TOKEN_EXPIRES,
     onRequest: (HttpRequestData) -> Unit = {},
 ): HttpClient = createWarehouseHttpClient(
     subscriptionKey = "test-subscription-key",
     device = "Android",
-    engine = mockEngine(json, status, loginResponseHeaders(), onRequest),
+    engine = mockEngine(json, status, loginResponseHeaders(expiresDatetime = expiresDatetime), onRequest),
 )
 
 internal fun mockAuthenticatedHttpClient(
     json: String = "{}",
     status: HttpStatusCode = HttpStatusCode.OK,
-    tokenProvider: suspend () -> String? = { LOGIN_TOKEN },
+    tokenProvider: suspend () -> String = { LOGIN_TOKEN },
+    onUnauthorized: suspend () -> Unit = {},
     onRequest: (HttpRequestData) -> Unit = {},
 ): HttpClient = createWarehouseHttpClient(
     subscriptionKey = "test-subscription-key",
@@ -69,7 +72,7 @@ internal fun mockAuthenticatedHttpClient(
         },
         onRequest = onRequest,
     ),
-).installTwlTokenInterceptor(tokenProvider)
+).installTwlTokenInterceptor(tokenProvider, onUnauthorized)
 
 private fun mockEngine(
     json: String,

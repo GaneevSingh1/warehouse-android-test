@@ -9,7 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import nz.co.warehouseandroidtest.ui.dashboard.DashboardScreen
-import nz.co.warehouseandroidtest.ui.productlist.ProductListScreen
+import nz.co.warehouseandroidtest.ui.search.ProductListScreen
 
 @Composable
 fun AppNavHost(
@@ -24,7 +24,12 @@ fun AppNavHost(
         composable<DashboardRoute> {
             DashboardScreen(
                 onSearchSubmitted = { query ->
-                    navController.navigate(ProductListRoute(query))
+                    navController.navigate(ProductListRoute(query)) {
+                        launchSingleTop = true
+                        popUpTo(DashboardRoute) {
+                            inclusive = false
+                        }
+                    }
                 },
             )
         }

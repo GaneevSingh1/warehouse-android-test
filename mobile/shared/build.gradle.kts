@@ -85,6 +85,7 @@ kotlin {
             implementation(libs.compose.uiTooling)
             implementation(libs.ktor.client.android)
             implementation(libs.koin.android)
+            implementation(libs.coil.network.okhttp)
         }
         commonMain {
             kotlin.srcDir(generateApiConfig)
@@ -107,7 +108,6 @@ kotlin {
                 implementation(libs.koin.compose.viewmodel)
                 implementation(libs.kermit)
                 implementation(libs.coil.compose)
-                implementation(libs.coil.network.ktor3)
                 implementation(libs.androidx.navigation.compose)
             }
         }
@@ -118,6 +118,7 @@ kotlin {
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
+            implementation(libs.coil.network.ktor3)
         }
     }
 }

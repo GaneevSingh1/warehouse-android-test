@@ -1,6 +1,6 @@
-package nz.co.warehouseandroidtest.data.local
+package nz.co.warehouseandroidtest.data.login
 
-import nz.co.warehouseandroidtest.domain.model.LoginSession
+import nz.co.warehouseandroidtest.domain.login.LoginSession
 
 class AuthLocalDataSource {
     private var session: LoginSession? = null

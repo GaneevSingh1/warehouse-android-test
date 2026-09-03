@@ -1,10 +1,10 @@
-package nz.co.warehouseandroidtest.data.local
+package nz.co.warehouseandroidtest.data.login
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlinx.coroutines.test.runTest
-import nz.co.warehouseandroidtest.domain.model.LoginSession
+import nz.co.warehouseandroidtest.domain.login.LoginSession
 
 class AuthLocalDataSourceTest {
 

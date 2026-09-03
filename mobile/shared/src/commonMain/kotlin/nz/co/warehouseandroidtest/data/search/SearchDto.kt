@@ -1,4 +1,4 @@
-package nz.co.warehouseandroidtest.data.remote.search
+package nz.co.warehouseandroidtest.data.search
 
 import kotlinx.serialization.Serializable
 

@@ -1,4 +1,4 @@
-package nz.co.warehouseandroidtest.data.repository
+package nz.co.warehouseandroidtest.data.search
 
 import io.ktor.http.HttpStatusCode
 import kotlin.test.Test
@@ -9,10 +9,6 @@ import kotlinx.coroutines.test.runTest
 import nz.co.warehouseandroidtest.data.EMPTY_SEARCH_RESPONSE_JSON
 import nz.co.warehouseandroidtest.data.SEARCH_RESPONSE_JSON
 import nz.co.warehouseandroidtest.data.mockAuthenticatedHttpClient
-import nz.co.warehouseandroidtest.data.remote.search.ImageGroupDto
-import nz.co.warehouseandroidtest.data.remote.search.PriceInfoDto
-import nz.co.warehouseandroidtest.data.remote.search.ProductDto
-import nz.co.warehouseandroidtest.data.remote.search.SearchRemoteDataSource
 
 class SearchRepositoryTest {
 

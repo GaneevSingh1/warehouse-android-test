@@ -1,20 +1,29 @@
-package nz.co.warehouseandroidtest.ui.productlist
+package nz.co.warehouseandroidtest.ui.search
 
+import io.ktor.client.engine.mock.MockEngine
+import io.ktor.client.engine.mock.MockEngineConfig
+import io.ktor.client.engine.mock.respond
 import io.ktor.client.request.HttpRequestData
+import io.ktor.http.ContentType
+import io.ktor.http.Headers
+import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest
 import nz.co.warehouseandroidtest.data.EMPTY_SEARCH_RESPONSE_JSON
 import nz.co.warehouseandroidtest.data.SEARCH_RESPONSE_JSON
+import nz.co.warehouseandroidtest.data.createWarehouseHttpClient
+import nz.co.warehouseandroidtest.data.installTwlTokenInterceptor
 import nz.co.warehouseandroidtest.data.mockAuthenticatedHttpClient
-import nz.co.warehouseandroidtest.data.remote.search.DEFAULT_SEARCH_LIMIT
-import nz.co.warehouseandroidtest.data.remote.search.SearchRemoteDataSource
-import nz.co.warehouseandroidtest.data.repository.SearchRepository
+import nz.co.warehouseandroidtest.data.search.SearchRemoteDataSource
+import nz.co.warehouseandroidtest.data.search.SearchRepository
+import nz.co.warehouseandroidtest.domain.search.DEFAULT_SEARCH_LIMIT
 
 class ProductListViewModelTest {
 
@@ -45,8 +54,7 @@ class ProductListViewModelTest {
             dispatcher = Dispatchers.Unconfined,
         )
 
-        val state = assertIs<ProductListUiState.Error>(viewModel.uiState)
-        assertTrue(state.message.contains("401"))
+        assertEquals(ProductListUiState.Error, viewModel.uiState)
     }
 
     @Test
@@ -57,6 +65,63 @@ class ProductListViewModelTest {
         viewModel.retry()
 
         assertEquals(ProductListUiState.Empty, viewModel.uiState)
+    }
+
+    @Test
+    fun retry_cancelsInFlightLoadSoStaleResultIsIgnored() = runTest {
+        val gates = mutableListOf<CompletableDeferred<Unit>>()
+        var completedResponses = 0
+        val viewModel = ProductListViewModel(
+            query = "stool",
+            searchRepository = SearchRepository(
+                SearchRemoteDataSource(
+                    createWarehouseHttpClient(
+                        subscriptionKey = "test-subscription-key",
+                        device = "Android",
+                        engine = MockEngine(
+                            MockEngineConfig().apply {
+                                dispatcher = Dispatchers.Unconfined
+                                addHandler {
+                                    val gate = CompletableDeferred<Unit>().also { gates += it }
+                                    gate.await()
+                                    completedResponses++
+                                    val json = if (completedResponses == 1) {
+                                        SEARCH_RESPONSE_JSON
+                                    } else {
+                                        EMPTY_SEARCH_RESPONSE_JSON
+                                    }
+                                    respond(
+                                        content = json.trimIndent(),
+                                        status = HttpStatusCode.OK,
+                                        headers = Headers.build {
+                                            append(
+                                                HttpHeaders.ContentType,
+                                                ContentType.Application.Json.toString(),
+                                            )
+                                        },
+                                    )
+                                }
+                            },
+                        ),
+                    ).installTwlTokenInterceptor(tokenProvider = { "test-twl-token" }),
+                ),
+            ),
+            dispatcher = Dispatchers.Unconfined,
+        )
+
+        assertEquals(ProductListUiState.Loading, viewModel.uiState)
+        assertEquals(1, gates.size)
+
+        viewModel.retry()
+        assertEquals(2, gates.size)
+
+        gates[1].complete(Unit)
+        assertIs<ProductListUiState.Success>(viewModel.uiState)
+        assertEquals(1, completedResponses)
+
+        gates[0].complete(Unit)
+        assertIs<ProductListUiState.Success>(viewModel.uiState)
+        assertEquals(1, completedResponses)
     }
 
     @Test
